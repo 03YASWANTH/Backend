@@ -45,11 +45,12 @@ const studentSchema = new mongoose.Schema({
     required: true,
     enum: [1, 2, 3, 4, 5, 6, 7, 8]
   },
-  // counsellor: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'Counsellor',
-  //   required: true
-  // }
+  counsellor: {
+    //type: mongoose.Schema.Types.ObjectId,
+    type:String,
+    //ref: 'Counsellor',
+    required: true
+  }
 });
 
 

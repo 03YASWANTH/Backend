@@ -2,6 +2,8 @@ const { connectDB } = require("./config/connectDatabase");
 const { AdminRouter } = require("./routes/admin");
 
 const app = require("express")();
+app.use(require("express").json());
+
 
 require("dotenv").config({
   path: "./.env",
@@ -18,5 +20,5 @@ app.get("/", (req, res) => {
 app.use('/api/v1/admin', AdminRouter);
 
 app.listen(process.env.PORT, () => {
-  console.log("Server is running on http://localhost:3000");
+  console.log("Server is running on",process.env.PORT);
 });
