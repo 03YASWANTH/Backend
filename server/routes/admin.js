@@ -39,9 +39,9 @@ AdminRouter.post("/bulkaddstudents", excelParser, validateStudent,async (req, re
       res.status(500).json({ message: 'Error uploading or saving students', error: error.message });
   }
 });
-AdminRouter.get("/students", async (req, res) => {
-  const year = req.body.year;
-  const studentArrays = await Student.find({currentYear:year});
+AdminRouter.get("/students/:year", async (req, res) => {
+  const year = req.params.year;
+  const studentArrays = (await Student.find({currentYear:year}));
   res.send({
     success: true,
     message: "Student list",
@@ -80,6 +80,28 @@ AdminRouter.put("/students/:id", async (req, res) => {
   res.send({
     success: true,
     message: "Student updated successfully!",
+    data: student,
+  });
+});
+
+AdminRouter.delete("/students/:id", async (req, res) => {
+  const { id } = req.params;
+  const student = await Student.findOneAndDelete({
+    studentId: id,
+  });
+  res.send({
+    success: true,
+    message: "Student deleted successfully!",
+    data: student,
+  });
+});
+
+AdminRouter.delete("/students/:year", async (req, res) => {
+  const year = req.params.year;
+  const student = await Student.deleteMany({currentYear:year});
+  res.send({
+    success: true,
+    message: "Student deleted successfully!",
     data: student,
   });
 });
