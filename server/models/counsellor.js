@@ -1,6 +1,4 @@
 const mongoose = require('mongoose');
-
-
 const counsellorSchema = new mongoose.Schema({
     counsellorId: {
         type: String,
@@ -21,7 +19,9 @@ const counsellorSchema = new mongoose.Schema({
         required: true 
     }
 });
-const Counsellor = new mongoose.model('Counsellor', 'counsellorSchema');
-module.exports={Counsellor,};
+const Counsellor = new mongoose.model('Counsellor', counsellorSchema);
+module.exports={
+    Counsellor,
+};
 
 

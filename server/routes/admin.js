@@ -108,16 +108,37 @@ AdminRouter.delete("/students/:year", async (req, res) => {
   });
 });
 AdminRouter.post("/counsellor",async(req,res)=>
-{
-  
+{ 
   const { data } = req.body;
-  await counsellor.create(data);
+  const counsellor = new Counsellor(data);
+  await counsellor.save();
   res.send({
     success: true,
     message: "Counsellor added successfully!",
   });
       
 })
+AdminRouter.get("/counsellor",async(req,res)=>
+{
+  const counsellor = await Counsellor.find()
+  res.send({
+    success: true,
+    message:"counsellor data  fetched successfully!",
+    data:counsellor
+  })
+  
+})
+AdminRouter.delete("/counsellor/:id", async (req, res) => {
+  const { id } = req.params;
+  const counsellor = await Counsellor.findOneAndDelete({
+    counsellorId: id,
+  });
+  res.send({
+    success: true,
+    message: "Counsellor deleted successfully!",
+    data: counsellor,
+  });
+});
 
 module.exports = {
   AdminRouter,
