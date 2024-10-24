@@ -5,6 +5,8 @@ const path = require('path');
 const {excelParser} = require("../middleware/excelParser");
 const {validateStudent} = require('../middleware/validateStudent'); 
 const { Student } = require("../models/student");
+const {Counsellor} = require("../models/counsellor");
+const { Admin } = require('../models/admin');
 const AdminRouter = require("express").Router();
 const upload = multer({ dest: 'uploads/' }); 
 
@@ -105,6 +107,17 @@ AdminRouter.delete("/students/:year", async (req, res) => {
     data: student,
   });
 });
+AdminRouter.post("/counsellor",async(req,res)=>
+{
+  
+  const { data } = req.body;
+  await counsellor.create(data);
+  res.send({
+    success: true,
+    message: "Counsellor added successfully!",
+  });
+      
+})
 
 module.exports = {
   AdminRouter,
