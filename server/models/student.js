@@ -6,9 +6,10 @@ const studentSchema = new mongoose.Schema({
     unique: true,    
     required: true
   },
-  name: {
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true }
+  name: 
+  {
+   type: String, 
+   required: true 
   },
   email: {
     type: String,
@@ -45,7 +46,7 @@ const studentSchema = new mongoose.Schema({
     required: true,
     enum: [1, 2, 3, 4, 5, 6, 7, 8]
   },
-  counsellor: {
+  counsellorId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Counsellor',
     required: true
