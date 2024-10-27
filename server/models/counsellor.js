@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+
 const counsellorSchema = new mongoose.Schema({
     counsellorId: {
         type: String,

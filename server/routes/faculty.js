@@ -1,29 +1,23 @@
 const { Student } = require("../models/student");
 
-const router = require("express").Router();
+const FacultyRouter = require("express").Router();
 
-router.get("/students", async (req, res) => {
-  const studentArrays = await Student.find();
+FacultyRouter.get("/getCouncellorStudents/:id", async (req, res) => {
+  console.log(req.params.id);
+  await Student.find({ counsellorReference: req.params.id })
+    .then((data) => {
+      res.send({
+        success: true,
+        message: "Student list",
+        data: data,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({ message: "Error", error: err.message });
+    });
 });
 
-router.post("/students", async (req, res) => {
-  const { data } = req.body;
-  const student = new Student(data);
-  await student.save();
-  res.send({
-    success: true,
-    message: "Student added successfully!",
-    data: student,
-  });
-});
-
-router.put("/students/:id", async (req, res) => {
-  const { id } = req.params;
-  const { data } = req.body;
-  const student = await Student.findByIdAndUpdate(id, data, { new: true });
-  res.send({
-    success: true,
-    message: "Student updated successfully!",
-    data: student,
-  });
-});
+module.exports = {
+  FacultyRouter,
+};
