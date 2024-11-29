@@ -20,6 +20,11 @@ const SubjectSchema = new mongoose.Schema({
     {
         type:Number,
         required:true
+    },
+    regulation:
+    {
+        type: String,
+        required: true
     }
 });
 const Subject = new mongoose.model('Subject',SubjectSchema);

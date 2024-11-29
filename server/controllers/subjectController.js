@@ -1,7 +1,23 @@
 const Subject = require("../models/subject");
 
+const bulkAddSubjects = async (req, res) => {
+    try {
+        const subjectsData = req.validSubjects; // Valid subjects from validation middleware
+
+        if (subjectsData.length > 0) {
+            await Subject.insertMany(subjectsData);
+        }
+
+        res.status(201).send({ message: 'Subjects uploaded and saved successfully!' });
+    } catch (error) {
+        console.error('Error uploading or saving subjects:', error);
+        res.status(500).json({ message: 'Error uploading or saving subjects', error: error.message });
+    }
+};
+  
+
 const addSubject = async (req, res) => {
-    const { subjectId, name, fullName, semesterNo } = req.body.data;
+    const { subjectId, name, fullName, semesterNo ,regulation} = req.body.data;
 
     try {
         const existingSubject = await Subject.findOne({ subjectId });
@@ -12,7 +28,7 @@ const addSubject = async (req, res) => {
             });
         }
 
-        const subject = new Subject({ subjectId, name, fullName, semesterNo });
+        const subject = new Subject({ subjectId, name, fullName, semesterNo,regulation});
         await subject.save();
 
         res.status(201).json({
@@ -107,4 +123,4 @@ const deleteSubject = async (req, res) => {
     }
 };
 
-module.exports = { addSubject, getSubjects, updateSubject, deleteSubject };
+module.exports = { bulkAddSubjects,addSubject, getSubjects, updateSubject, deleteSubject };

@@ -141,6 +141,8 @@ const deleteStudent = async (req, res) => {
 };
 //checked
 //bulk delete students of a year
+
+//attendance and marks students
 const deleteStudentsByYear = async (req, res) => {
     const year = req.params.year;
     const student = await Student.deleteMany({ currentYear: year });

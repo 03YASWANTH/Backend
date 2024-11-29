@@ -5,11 +5,11 @@ const fs = require('fs');
 const path = require('path');
 const { excelParser } = require("../middleware/excelParser");
 const { validateStudent } = require('../middleware/validateStudent'); 
+const { validateSubject } =  require('../middleware/validateSubject'); 
 const { Student } = require("../models/student");
 const { Counsellor } = require("../models/counsellor");
 const { Admin } = require('../models/admin');
 const AdminRouter = express.Router();
-const upload = multer({ dest: 'uploads/' }); 
 
 // functions for student routes
 const { 
@@ -20,6 +20,21 @@ const {
   deleteStudent, 
   deleteStudentsByYear 
 } = require("../controllers/studentController");
+
+const {
+  bulkaddSubjects,
+  addSubject,
+  getSubjects,
+  deleteSubject,
+  updateSubject
+}= require("../controllers/subjectController");
+
+// functions for admin routes
+AdminRouter.post("/bulkaddsubjects",excelParser,validateSubject,bulkaddSubjects);
+AdminRouter.post("/subject",addSubject);
+AdminRouter.get("/subject",getSubjects);
+AdminRouter.put("/subject/:id",updateSubject);
+AdminRouter.delete("/subject/:id",deleteSubject);
 
 AdminRouter.post("/bulkaddstudents", excelParser, validateStudent, bulkAddStudents);
 AdminRouter.post("/students",addStudent);
