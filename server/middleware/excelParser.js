@@ -15,7 +15,7 @@ const excelParser = (req, res, next) => {
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
 
-      req.body = xlsx.utils.sheet_to_json(sheet);
+      req.fileData = xlsx.utils.sheet_to_json(sheet);
 
       next();
     } catch (error) {

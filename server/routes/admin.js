@@ -1,24 +1,27 @@
 const express = require("express");
-const multer = require('multer'); // To handle file uploads
-const xlsx = require('xlsx'); // To parse Excel files
-const fs = require('fs');
-const path = require('path');
+const multer = require("multer"); // To handle file uploads
+const xlsx = require("xlsx"); // To parse Excel files
+const fs = require("fs");
+const path = require("path");
 const { excelParser } = require("../middleware/excelParser");
-const { validateStudent } = require('../middleware/validateStudent'); 
-const { validateSubject } =  require('../middleware/validateSubject'); 
+const { validateStudent } = require("../middleware/validateStudent");
+const {
+  validateSubject,
+  validateSubjects,
+} = require("../middleware/validateSubject");
 const { Student } = require("../models/student");
 const { Counsellor } = require("../models/counsellor");
-const { Admin } = require('../models/admin');
+const { Admin } = require("../models/admin");
 const AdminRouter = express.Router();
 
 // functions for student routes
-const { 
-  bulkAddStudents, 
-  addStudent, 
-  updateStudent, 
-  getStudentsByYear, 
-  deleteStudent, 
-  deleteStudentsByYear 
+const {
+  bulkAddStudents,
+  addStudent,
+  updateStudent,
+  getStudentsByYear,
+  deleteStudent,
+  deleteStudentsByYear,
 } = require("../controllers/studentController");
 
 const {
@@ -26,25 +29,35 @@ const {
   addSubject,
   getSubjects,
   deleteSubject,
-  updateSubject
-}= require("../controllers/subjectController");
+  updateSubject,
+  bulkAddSubjects,
+} = require("../controllers/subjectController");
+const { bulkUploadMarks } = require("../controllers/marksController");
 
-// functions for admin routes
-AdminRouter.post("/bulkaddsubjects",excelParser,validateSubject,bulkaddSubjects);
-AdminRouter.post("/subject",addSubject);
-AdminRouter.get("/subject",getSubjects);
-AdminRouter.put("/subject/:id",updateSubject);
-AdminRouter.delete("/subject/:id",deleteSubject);
+AdminRouter.post(
+  "/bulkaddsubjects",
+  excelParser,
+  validateSubjects,
+  bulkAddSubjects
+);
+AdminRouter.post("/subject", addSubject);
+AdminRouter.get("/subject", getSubjects);
+AdminRouter.put("/subject/:id", updateSubject);
+AdminRouter.delete("/subject/:id", deleteSubject);
 
-AdminRouter.post("/bulkaddstudents", excelParser, validateStudent, bulkAddStudents);
-AdminRouter.post("/students",addStudent);
-AdminRouter.put("/students/:id",updateStudent);
+AdminRouter.post(
+  "/bulkaddstudents",
+  excelParser,
+  validateStudent,
+  bulkAddStudents
+);
+AdminRouter.post("/students", addStudent);
+AdminRouter.put("/students/:id", updateStudent);
 AdminRouter.get("/students/year/:year", getStudentsByYear);
 AdminRouter.delete("/students/:id", deleteStudent);
 AdminRouter.delete("/students/year/:year", deleteStudentsByYear);
 
-AdminRouter.post("/counsellor",async(req,res)=>
-{ 
+AdminRouter.post("/counsellor", async (req, res) => {
   const { data } = req.body;
   const counsellor = new Counsellor(data);
   await counsellor.save();
@@ -52,32 +65,31 @@ AdminRouter.post("/counsellor",async(req,res)=>
     success: true,
     message: "Counsellor added successfully!",
   });
-      
-})
-AdminRouter.get("/counsellor",async(req,res)=>
-{
-  const counsellor = await Counsellor.find()
+});
+AdminRouter.get("/counsellor", async (req, res) => {
+  const counsellor = await Counsellor.find();
   res.send({
     success: true,
-    message:"counsellor data  fetched successfully!",
-    data:counsellor
-  })
-  
-})
+    message: "counsellor data  fetched successfully!",
+    data: counsellor,
+  });
+});
 AdminRouter.put("/counsellor/:id", async (req, res) => {
   const { id } = req.params;
   const { data } = req.body;
-  const counsellor = await Counsellor.findByIdAndUpdate({
-    counsellorId: id,
-  }, data, { new: true });
+  const counsellor = await Counsellor.findByIdAndUpdate(
+    {
+      counsellorId: id,
+    },
+    data,
+    { new: true }
+  );
   res.send({
     success: true,
     message: "Counsellor updated successfully!",
     data: counsellor,
   });
 });
-  
-
 
 AdminRouter.delete("/counsellor/:id", async (req, res) => {
   const { id } = req.params;
@@ -90,6 +102,8 @@ AdminRouter.delete("/counsellor/:id", async (req, res) => {
     data: counsellor,
   });
 });
+
+AdminRouter.post("/marks/upload/:sem", excelParser, bulkUploadMarks);
 
 module.exports = {
   AdminRouter,
