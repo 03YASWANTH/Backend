@@ -1,4 +1,4 @@
-const Subject = require("../models/subject");
+const {Subject} = require("../models/subject");
 
 const bulkAddSubjects = async (req, res) => {
     try {
@@ -17,7 +17,7 @@ const bulkAddSubjects = async (req, res) => {
   
 
 const addSubject = async (req, res) => {
-    const { subjectId, name, fullName, semesterNo ,regulation} = req.body.data;
+    const {subjectId, name, fullName, semesterNo ,regulation} = req.body.data;
 
     try {
         const existingSubject = await Subject.findOne({ subjectId });

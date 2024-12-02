@@ -2,17 +2,17 @@ const { z } = require('zod');
 const { Subject } = require("../models/subject");
 
 // Define the Zod schema for subject validation
-const subjectSchema = z.object({
-    subjectCode: z.string().min(1, { message: "Subject code is required" }),
-    name: z.string().min(1, { message: "Subject name is required" }),
-    department: z.string().min(1, { message: "Department is required" }),
-    creditHours: z.number().int().min(1, { message: "Credit hours must be a positive number" }),
-    semester: z.number().int().min(1, { message: "Semester must be between 1 and 8" }).max(8),
+const subjectschema = z.object({
+    subjectId: z.string().min(1, { message: "subjectId is required" }),
+    name: z.string().min(1, { message: "name is required" }),
+    fullName: z.string().min(1, { message: "fullName is required" }),
+    semsterNo: z.number().int().nonnegative({ message: "semsterNo must be a non-negative integer" }),
+    regulation: z.string().min(1, { message: "regulation is required" }),
 });
 
 // Subject validation middleware
 const validateSubjects = async (req, res, next) => {
-    let subjectsData = req.body; // Assuming data is sent as JSON
+    let subjectsData =  req.fileData; // Assuming data is sent as JSON
 
     if (!Array.isArray(subjectsData)) {
         return res.status(400).send({
@@ -28,7 +28,7 @@ const validateSubjects = async (req, res, next) => {
     for (const subjectData of subjectsData) {
         try {
             // Validate subject data with the Zod schema
-            subjectSchema.parse(subjectData);
+            subjectschema.parse(subjectData);
 
             // Check if the subject code or name already exists
             const existingSubject = await Subject.findOne({

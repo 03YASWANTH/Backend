@@ -22,7 +22,7 @@ const studentSchema = z.object({
 
 // Validation middleware
 const validateStudent = async (req, res, next) => {
-    let studentsData = req.body; // Assuming data is sent as JSON
+    let studentsData =  req.fileData; // Assuming data is sent as JSON
 
     if (!Array.isArray(studentsData)) {
         return res.status(400).send({

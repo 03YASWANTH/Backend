@@ -16,7 +16,7 @@ const SubjectSchema = new mongoose.Schema({
         type:String,
         required:true
     },
-    semsterNo:
+    semesterNo:
     {
         type:Number,
         required:true

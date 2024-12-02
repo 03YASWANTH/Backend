@@ -1,8 +1,8 @@
 const { connectDB } = require("./config/connectDatabase");
 const { AdminRouter } = require("./routes/admin");
-
-const app = require("express")();
-app.use(require("express").json());
+const express = require("express");
+const app = express();
+app.use(express.json());
 app.use(require("cors")());
 
 
