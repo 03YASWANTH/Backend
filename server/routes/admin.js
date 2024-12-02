@@ -32,7 +32,7 @@ const {
   updateSubject,
   bulkAddSubjects,
 } = require("../controllers/subjectController");
-const { bulkUploadMarks } = require("../controllers/marksController");
+const { bulkUploadMarks, updateMarks } = require("../controllers/marksController");
 
 AdminRouter.post(
   "/bulkaddsubjects",
@@ -104,6 +104,7 @@ AdminRouter.delete("/counsellor/:id", async (req, res) => {
 });
 
 AdminRouter.post("/marks/upload/:sem", excelParser, bulkUploadMarks);
+AdminRouter.put("/marks/update", updateMarks);
 
 module.exports = {
   AdminRouter,
