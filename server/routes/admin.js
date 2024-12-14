@@ -3,6 +3,7 @@ const multer = require("multer"); // To handle file uploads
 const xlsx = require("xlsx"); // To parse Excel files
 const fs = require("fs");
 const path = require("path");
+const {excelAAParser} = require("../middleware/attendanceParse");
 const { excelParser } = require("../middleware/excelParser");
 const { validateStudent } = require("../middleware/validateStudent");
 const {
@@ -32,6 +33,7 @@ const {
   updateSubject,
   bulkAddSubjects,
 } = require("../controllers/subjectController");
+const { addAttendance} = require("../controllers/attendanceController");
 const { bulkUploadMarks, updateMarks } = require("../controllers/marksController");
 
 AdminRouter.post(
@@ -56,6 +58,9 @@ AdminRouter.put("/students/:id", updateStudent);
 AdminRouter.get("/students/year/:year", getStudentsByYear);
 AdminRouter.delete("/students/:id", deleteStudent);
 AdminRouter.delete("/students/year/:year", deleteStudentsByYear);
+
+AdminRouter.post("/attendance", excelAAParser,addAttendance);
+//AdminRouter.put("/attendance/:id", updateAttendance);
 
 AdminRouter.post("/counsellor", async (req, res) => {
   const { data } = req.body;

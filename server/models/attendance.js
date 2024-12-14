@@ -3,8 +3,7 @@ const { Schema } = mongoose;
 
 const attendanceSchema = new Schema({
   studentId: { 
-    type: Schema.Types.ObjectId, 
-    ref: 'Student', 
+    type:String, 
     required: true 
   }, 
   semesterId: { 
@@ -29,5 +28,5 @@ const attendanceSchema = new Schema({
 });
 
 attendanceSchema.index({ studentId: 1, semesterId: 1 });
-
-module.exports = mongoose.model('Attendance', attendanceSchema);
+const Attendance = mongoose.model('Attendance', attendanceSchema);
+module.exports = {Attendance}
