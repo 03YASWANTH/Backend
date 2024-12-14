@@ -10,6 +10,10 @@ const MarksSchema = new mongoose.Schema({
     enum: ['mid1', 'mid2', 'external'],
     required: true
   },
+  batch: {
+    type: String,
+    required: true
+  },
   results: {
     type: Map,
     of: {

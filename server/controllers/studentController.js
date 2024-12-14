@@ -122,6 +122,8 @@ const updateStudent = async (req, res) => {
 const getStudentsByYear = async (req, res) => {
     const year = req.params.year;
     const studentArrays = await Student.find({ currentYear: year });
+    console.log(studentArrays);
+    
     res.send({
         success: true,
         message: "Student list",

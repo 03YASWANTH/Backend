@@ -3,7 +3,7 @@ const multer = require("multer"); // To handle file uploads
 const xlsx = require("xlsx"); // To parse Excel files
 const fs = require("fs");
 const path = require("path");
-const {excelAAParser} = require("../middleware/attendanceParse");
+const { excelAAParser } = require("../middleware/attendanceParse");
 const { excelParser } = require("../middleware/excelParser");
 const { validateStudent } = require("../middleware/validateStudent");
 const {
@@ -33,8 +33,12 @@ const {
   updateSubject,
   bulkAddSubjects,
 } = require("../controllers/subjectController");
-const { addAttendance} = require("../controllers/attendanceController");
-const { bulkUploadMarks, updateMarks } = require("../controllers/marksController");
+const { addAttendance } = require("../controllers/attendanceController");
+const {
+  bulkUploadMarks,
+  updateMarks,
+  getMarks,
+} = require("../controllers/marksController");
 
 AdminRouter.post(
   "/bulkaddsubjects",
@@ -53,13 +57,15 @@ AdminRouter.post(
   validateStudent,
   bulkAddStudents
 );
+// http://localhost:3000/api/v1/admin/students/1
+
 AdminRouter.post("/students", addStudent);
 AdminRouter.put("/students/:id", updateStudent);
-AdminRouter.get("/students/year/:year", getStudentsByYear);
+AdminRouter.get("/students/:year", getStudentsByYear);
 AdminRouter.delete("/students/:id", deleteStudent);
 AdminRouter.delete("/students/year/:year", deleteStudentsByYear);
 
-AdminRouter.post("/attendance", excelAAParser,addAttendance);
+AdminRouter.post("/attendance", excelAAParser, addAttendance);
 //AdminRouter.put("/attendance/:id", updateAttendance);
 
 AdminRouter.post("/counsellor", async (req, res) => {
@@ -110,6 +116,7 @@ AdminRouter.delete("/counsellor/:id", async (req, res) => {
 
 AdminRouter.post("/marks/upload/:sem", excelParser, bulkUploadMarks);
 AdminRouter.put("/marks/update", updateMarks);
+AdminRouter.get("/marks", getMarks);
 
 module.exports = {
   AdminRouter,

@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const bulkUploadMarks = async (req, res) => {
   try {
     const { sem } = req.params;
-    const { examType } = req.body;
+    const { examType, batch } = req.body;
     if (!sem || !examType) {
       return res.status(400).json({
         message: "Semester and exam type are required",
@@ -58,6 +58,7 @@ const bulkUploadMarks = async (req, res) => {
       semester: sem,
       examType,
       results,
+      batch,
     });
 
     await marksDocument.save();
@@ -78,109 +79,139 @@ const bulkUploadMarks = async (req, res) => {
 
 const updateMarks = async (req, res) => {
   try {
-    const {
-      semester,
-      // batch,
-      examType,
-      studentId,
-      subject,
-      marks
-    } = req.body;
+    const { semester, batch, examType, studentId, subject, marks } = req.body;
 
-    // Input validation
-    if (!semester || !examType || !studentId || !subject || marks === undefined) {
+    if (
+      !batch ||
+      !semester ||
+      !examType ||
+      !studentId ||
+      !subject ||
+      marks === undefined
+    ) {
       return res.status(400).json({
-        message: 'Missing required fields',
-        requiredFields: ['semester', 'examType', 'studentId', 'subject', 'marks']
+        message: "Missing required fields",
+        requiredFields: [
+          "semester",
+          "examType",
+          "studentId",
+          "subject",
+          "marks",
+        ],
       });
     }
 
     // Validate marks is a number
-    if (typeof marks !== 'number' || isNaN(marks)) {
+    if (typeof marks !== "number" || isNaN(marks)) {
       return res.status(400).json({
-        message: 'Marks must be a valid number'
+        message: "Marks must be a valid number",
       });
     }
 
     // Update using aggregation pipeline with batch and student checks
     const updatedMarks = await Marks.findOneAndUpdate(
-      { 
-        semester, 
+      {
+        semester,
         examType,
-        // batch,
-        [`results.${studentId}`]: { $exists: true }
+        batch,
+        [`results.${studentId}`]: { $exists: true },
       },
-      { 
-        $set: { [`results.${studentId}.${subject}`]: marks }
+      {
+        $set: { [`results.${studentId}.${subject}`]: marks },
       },
-      { 
+      {
         new: true,
-        runValidators: true
+        runValidators: true,
       }
     );
 
     // If no document was updated, provide detailed error
     if (!updatedMarks) {
       // Check if the record exists with given parameters
-      const existingRecord = await Marks.findOne({ 
-        semester, 
+      const existingRecord = await Marks.findOne({
+        semester,
         examType,
-        // batch 
+        batch,
       });
-      
+
       if (!existingRecord) {
         return res.status(404).json({
-          message: 'No marks record found',
+          message: "No marks record found",
           details: {
             semester,
             examType,
-            // batch
-          }
+            batch,
+          },
         });
       }
 
       // Log the existing results for debugging
-      console.log('Existing Results:', existingRecord.results);
+      console.log("Existing Results:", existingRecord.results);
 
       return res.status(404).json({
-        message: 'Student not found in the marks record',
+        message: "Student not found in the marks record",
         details: {
           semester,
           examType,
-          // batch,
+          batch,
           studentId,
-          existingStudents: existingRecord.results ? Array.from(existingRecord.results.keys()) : []
-        }
+          existingStudents: existingRecord.results
+            ? Array.from(existingRecord.results.keys())
+            : [],
+        },
       });
     }
 
     res.status(200).json({
-      message: 'Marks updated successfully',
+      message: "Marks updated successfully",
       updatedRecord: {
         semester: updatedMarks.semester,
         examType: updatedMarks.examType,
         // batch: updatedMarks.batch,
         studentId: studentId,
         subject: subject,
-        newMarks: marks
-      }
+        newMarks: marks,
+      },
     });
   } catch (error) {
-    console.error('Error updating marks:', error);
+    console.error("Error updating marks:", error);
 
     // Differentiate between different types of errors
     if (error instanceof mongoose.Error.ValidationError) {
       return res.status(400).json({
-        message: 'Validation Error',
-        details: error.errors
+        message: "Validation Error",
+        details: error.errors,
       });
     }
 
     res.status(500).json({
-      message: 'Internal server error',
-      error: error.message
+      message: "Internal server error",
+      error: error.message,
     });
   }
 };
 
-module.exports = { bulkUploadMarks, updateMarks };
+const getMarks = async (req, res) => {
+  try {
+    const { semester, examType, batch } = req.query;
+    const marks = await Marks.findOne({
+      semester,
+      examType,
+      batch,
+    });
+    if (!marks) {
+      return res.status(404).json({
+        message: "Marks not found",
+      });
+    }
+    res.status(200).json(marks);
+  } catch (error) {
+    console.error("Error fetching marks:", error);
+    res.status(500).json({
+      message: "Error fetching marks",
+      error: error.message,
+    });
+  }
+};
+
+module.exports = { bulkUploadMarks, updateMarks, getMarks };
