@@ -42,12 +42,15 @@ const bulkUploadMarks = async (req, res) => {
 
       const subjectMarks = {};
       columns.forEach((subject) => {
-        const marks = parseFloat(row[subject]);
-
-        if (!isNaN(marks) && marks >= 0 && marks <= 100) {
-          subjectMarks[subject] = marks;
+        if (examType !== "external") {
+          const marks = parseFloat(row[subject]);
+          if (!isNaN(marks) && marks >= 0 && marks <= 100) {
+            subjectMarks[subject] = marks;
+          } else {
+            console.warn(`Invalid marks for ${rollNo} in ${subject}`);
+          }
         } else {
-          console.warn(`Invalid marks for ${rollNo} in ${subject}`);
+          subjectMarks[subject] = row[subject];
         }
       });
 
@@ -100,15 +103,14 @@ const updateMarks = async (req, res) => {
         ],
       });
     }
-
-    // Validate marks is a number
-    if (typeof marks !== "number" || isNaN(marks)) {
-      return res.status(400).json({
-        message: "Marks must be a valid number",
-      });
+    if (examType !== "external") {
+      if (typeof marks !== "number" || isNaN(marks)) {
+        return res.status(400).json({
+          message: "Marks must be a valid number",
+        });
+      }
     }
 
-    // Update using aggregation pipeline with batch and student checks
     const updatedMarks = await Marks.findOneAndUpdate(
       {
         semester,
@@ -125,9 +127,7 @@ const updateMarks = async (req, res) => {
       }
     );
 
-    // If no document was updated, provide detailed error
     if (!updatedMarks) {
-      // Check if the record exists with given parameters
       const existingRecord = await Marks.findOne({
         semester,
         examType,
