@@ -1,5 +1,3 @@
-import "./App.css";
-
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import {
@@ -51,9 +49,9 @@ function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const menuItems = [
+    { text: "Admin", icon: <AdminIcon />, path: "/" },
     { text: "Students", icon: <StudentsIcon />, path: "/students" },
     { text: "Faculty", icon: <FacultyIcon />, path: "/faculty" },
-    { text: "Admin", icon: <AdminIcon />, path: "/admin" },
     { text: "Subjects", icon: <SubjectsIcon />, path: "/subjects" },
     { text: "Attendance", icon: <AttendanceIcon />, path: "/attendance" },
     { text: "Marks", icon: <MarksIcon />, path: "/marks" },
@@ -64,7 +62,11 @@ function App() {
       <Toolbar />
       <List>
         {menuItems.map((item) => (
-          <ListItem button key={item.text} component={Link} to={item.path}>
+          <ListItem 
+            key={item.text} 
+            component={Link} 
+            to={item.path}
+          >
             <ListItemIcon>{item.icon}</ListItemIcon>
             <ListItemText primary={item.text} />
           </ListItem>
@@ -136,14 +138,17 @@ function App() {
           <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
             <Toolbar />
             <Routes>
+              <Route path="/" element={<Admin/>} />
               <Route path="/students" element={<Students />} />
               <Route path="/faculty" element={<Faculty />} />
-              <Route path="/admin" element={<Admin />} />
               <Route path="/subjects" element={<Subjects />} />
               <Route path="/attendance" element={<Attendance />} />
-              <Route path="/marks" >
+              <Route path="/marks">
                 <Route index element={<Marks />} />
-                <Route path=":batch/:sem/:examType" element={<ViewMarksOfBatch />} />
+                <Route 
+                  path=":batch/:semester/:examType" 
+                  element={<ViewMarksOfBatch />} 
+                />
               </Route>
             </Routes>
           </Box>
