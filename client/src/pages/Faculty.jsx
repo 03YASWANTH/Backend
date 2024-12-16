@@ -96,7 +96,8 @@ const CounsellorsManagement = () => {
   const handleEditSave = async () => {
     try {
       // Ensure we're sending the correct data structure
-      await axios.put(`admin/counsellor/${editingCounsellor.counsellorId}`, {
+      console.log('editingCounsellor:', editingCounsellor);
+      const response = await axios.put(`admin/counsellor/${editingCounsellor.counsellorId}`, {
         name: {
           firstName: editingCounsellor.name.firstName,
           lastName: editingCounsellor.name.lastName
@@ -104,6 +105,7 @@ const CounsellorsManagement = () => {
         email: editingCounsellor.email,
         password: editingCounsellor.password
       });
+      console.log('Response from server:', response.data);
       
       toast.success('Counsellor updated successfully');
       fetchCounsellors();

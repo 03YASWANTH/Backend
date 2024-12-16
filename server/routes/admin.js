@@ -92,22 +92,7 @@ AdminRouter.get("/counsellor", async (req, res) => {
     data: counsellor,
   });
 });
-AdminRouter.put("/counsellor/:id", async (req, res) => {
-  const { id } = req.params;
-  const { data } = req.body;
-  const counsellor = await Counsellor.findByIdAndUpdate(
-    {
-      counsellorId: id,
-    },
-    data,
-    { new: true }
-  );
-  res.send({
-    success: true,
-    message: "Counsellor updated successfully!",
-    data: counsellor,
-  });
-});
+AdminRouter.put("/counsellor/:id", CounsellorUpdate);
 
 AdminRouter.delete("/counsellor/:id", async (req, res) => {
   const { id } = req.params;
