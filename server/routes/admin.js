@@ -40,6 +40,13 @@ const {
   getMarks,
 } = require("../controllers/marksController");
 
+const { 
+  CounsellorGet,
+  CounsellorDelete,
+  CounsellorPost,
+  CounsellorUpdate
+} = require("../controllers/counsellorController");
+
 AdminRouter.post(
   "/bulkaddsubjects",
   excelParser,
@@ -113,6 +120,10 @@ AdminRouter.delete("/counsellor/:id", async (req, res) => {
     data: counsellor,
   });
 });
+AdminRouter.delete("/counsellor/:id",CounsellorDelete);
+AdminRouter.put("/counsellor/:id",CounsellorUpdate);
+AdminRouter.get("/counsellor",CounsellorGet);
+AdminRouter.post("/counsellor", CounsellorPost);
 
 AdminRouter.post("/marks/upload/:sem", excelParser, bulkUploadMarks);
 AdminRouter.put("/marks/update", updateMarks);

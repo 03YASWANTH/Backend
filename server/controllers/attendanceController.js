@@ -4,11 +4,13 @@ const addAttendance = async (req, res) => {
   try {
     const bulkAttendanceData = req.fileData; // Array of attendance data
     const semesterId = req.body.semesterId;
-    const month = req.body.month; // The month the data is being uploaded for
+    const batch = req.body.batch;
+    const month = req.body.month; 
+    // The month the data is being uploaded for
 
     for (const record of bulkAttendanceData) {
       const { studentId, attendance } = record;
-      const existingRecord = await Attendance.findOne({ studentId, semesterId });
+      const existingRecord = await Attendance.findOne({ studentId, semesterId});
 
       if (existingRecord) {
         const monthIndex = existingRecord.attendanceData.findIndex(

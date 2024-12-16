@@ -10,6 +10,11 @@ const attendanceSchema = new Schema({
     type:Number, 
     required: true 
   }, 
+  batch:
+  {
+    type: String,
+    required: true,
+  },
   attendanceData: [
     {
       month: { 

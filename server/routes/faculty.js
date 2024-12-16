@@ -27,3 +27,4 @@ router.put("/students/:id", async (req, res) => {
     data: student,
   });
 });
+
