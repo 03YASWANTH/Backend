@@ -194,24 +194,87 @@ const updateMarks = async (req, res) => {
 const getMarks = async (req, res) => {
   try {
     const { semester, examType, batch } = req.query;
+
+    // Debugging logs
+    console.log("Received Query Parameters:", { semester, examType, batch });
+
+    // Validate query parameters
+    if (!semester || !examType || !batch) {
+      return res.status(400).json({
+        message: "Missing required query parameters (semester, examType, batch)",
+      });
+    }
+
+    // Fetch marks
     const marks = await Marks.findOne({
       semester,
       examType,
       batch,
     });
+    console.log(marks);
     if (!marks) {
       return res.status(404).json({
         message: "Marks not found",
       });
     }
+
     res.status(200).json(marks);
   } catch (error) {
-    console.error("Error fetching marks:", error);
+    console.error("Error fetching marks:", error.message);
+
     res.status(500).json({
       message: "Error fetching marks",
       error: error.message,
     });
   }
 };
+const deleteMarks = async (req, res) => {
+  try {
+    const { semester, examType, batch, studentId } = req.data
 
-module.exports = { bulkUploadMarks, updateMarks, getMarks };
+    // Debugging logs
+    console.log("Received Delete Parameters:", { semester, examType, batch, studentId });
+
+    // Validate request body parameters
+    if (!semester || !examType || !batch || !studentId) {
+      return res.status(400).json({
+        message: "Missing required parameters (semester, examType, batch, studentId)",
+      });
+    }
+
+    // Find the marks document
+    const marksDocument = await Marks.findOne({
+      semester,
+      examType,
+      batch
+    });
+
+    // Check if marks document exists
+    if (!marksDocument) {
+      return res.status(404).json({
+        message: "Marks record not found",
+      });
+    }
+
+    // Remove the specific student's marks
+    delete marksDocument.results[studentId];
+
+    // Save the updated document
+    await marksDocument.save();
+
+    res.status(200).json({
+      message: "Student marks deleted successfully",
+      remainingStudents: Object.keys(marksDocument.results)
+    });
+
+  } catch (error) {
+    console.error("Error deleting student marks:", error.message);
+
+    res.status(500).json({
+      message: "Error deleting student marks",
+      error: error.message,
+    });
+  }
+};
+
+module.exports = { bulkUploadMarks, updateMarks, getMarks,deleteMarks };

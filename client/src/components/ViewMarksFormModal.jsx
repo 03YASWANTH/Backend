@@ -8,7 +8,6 @@ import {
 } from "@mui/material";
 import React from "react";
 import toast from "react-hot-toast";
-import axios from "../../axios";
 import { useNavigate } from "react-router-dom";
 
 function ViewMarksFormModal({
@@ -18,8 +17,10 @@ function ViewMarksFormModal({
   handleChange,
 }) {
   const nav = useNavigate();
-  const handleSubmit = async (e) => {
+
+  const handleSubmit = async () => {
     try {
+      // Validate all required fields are filled
       if (!formData.batch || !formData.semester || !formData.examType) {
         toast.error("Please fill all the fields!", {
           style: {
@@ -34,8 +35,9 @@ function ViewMarksFormModal({
         });
         return;
       }
-      console.log(formData);
-      const semester = {
+
+      // Convert semester from Roman numeral to number
+      const semesterMapping = {
         I: 1,
         II: 2,
         III: 3,
@@ -44,27 +46,23 @@ function ViewMarksFormModal({
         VI: 6,
         VII: 7,
         VIII: 8,
-      }[formData.semester];
-    //   const response = await axios.get(
-    //     `/admin/marks?batch=${
-    //       formData.batch.split("-")[0]
-    //     }&semester=${semester}&examType=${formData.examType}`
-    //   );
-      nav(`/marks/${formData.batch.split("-")[0]}/${semester}/${formData.examType}`);
-    //   console.log(response.data);
-    //   toast.success("Fetched!", {
-    //     style: {
-    //       border: "1px solid #713200",
-    //       padding: "16px",
-    //       color: "#713200",
-    //     },
-    //     iconTheme: {
-    //       primary: "#713200",
-    //       secondary: "#FFFAEE",
-    //     },
-    //   });
+      };
+
+      const semester = semesterMapping[formData.semester];
+      if (semester === undefined) {
+        toast.error("Invalid semester selected!");
+        return;
+      }
+
+      // Extract batch year
+      const batchYear = formData.batch.split("-")[0];
+
+      // Navigate to marks page with correct parameters
+      nav(`/marks/${batchYear}/${semester}/${formData.examType}`);
+
     } catch (error) {
-      toast.error("Not found!", {
+      console.error("Error during submission:", error);
+      toast.error("An error occurred while processing your request.", {
         style: {
           border: "1px solid #713200",
           padding: "16px",
@@ -75,7 +73,6 @@ function ViewMarksFormModal({
           secondary: "#FFFAEE",
         },
       });
-      console.error("Error fetching marks:", error);
     }
   };
 
@@ -109,12 +106,13 @@ function ViewMarksFormModal({
         >
           Enter Marks Details
         </Typography>
+
         <TextField
           fullWidth
           select
           label="Batch"
           name="batch"
-          value={formData.batch}
+          value={formData.batch || ""}
           onChange={handleChange}
           variant="outlined"
           sx={{ mb: 2 }}
@@ -125,13 +123,14 @@ function ViewMarksFormModal({
           <MenuItem value="2023-2027">2023-2027</MenuItem>
           <MenuItem value="2024-2028">2024-2028</MenuItem>
         </TextField>
+
         <TextField
           required
           fullWidth
           select
           label="Semester"
           name="semester"
-          value={formData.semester}
+          value={formData.semester || ""}
           onChange={handleChange}
           variant="outlined"
           sx={{ mb: 2 }}
@@ -149,7 +148,7 @@ function ViewMarksFormModal({
           select
           label="Exam Type"
           name="examType"
-          value={formData.examType}
+          value={formData.examType || ""}
           onChange={handleChange}
           variant="outlined"
           sx={{ mb: 3 }}

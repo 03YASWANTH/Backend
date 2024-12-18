@@ -38,6 +38,7 @@ const {
   bulkUploadMarks,
   updateMarks,
   getMarks,
+  deleteMarks
 } = require("../controllers/marksController");
 
 const { 
@@ -113,6 +114,7 @@ AdminRouter.post("/counsellor", CounsellorPost);
 AdminRouter.post("/marks/upload/:sem", excelParser, bulkUploadMarks);
 AdminRouter.put("/marks/update", updateMarks);
 AdminRouter.get("/marks", getMarks);
+AdminRouter.delete("/marks")
 
 module.exports = {
   AdminRouter,

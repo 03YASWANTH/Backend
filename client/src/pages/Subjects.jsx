@@ -158,10 +158,6 @@ const Subjects = () => {
 
   return (
     <Box sx={{ width: '100%', typography: 'body1' }}>
-      <Typography variant="h4" gutterBottom>
-        Subject Management
-      </Typography>
-
       <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>

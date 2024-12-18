@@ -5,8 +5,7 @@ const fs = require('fs');
 //checked
 const bulkAddStudents = async (req, res) => {
     try {
-        const studentsData = req.body;
-
+        const studentsData = req.fileData;
         for (const studentData of studentsData) {
             const counsellor = await Counsellor.findOne({ counsellorId: studentData.counsellorId });
 
@@ -17,7 +16,7 @@ const bulkAddStudents = async (req, res) => {
 
             await Student.create({
                 studentId: studentData.studentId,
-                name: studentData.name,
+                name: {firstName:studentData.firstName, lastName:studentData.lastName},
                 email: studentData.email,
                 phoneNumber: studentData.phoneNumber,
                 fatherName: studentData.fatherName,
@@ -26,11 +25,10 @@ const bulkAddStudents = async (req, res) => {
                 motherPhoneNumber: studentData.motherPhoneNumber,
                 currentYear: studentData.currentYear,
                 semester: studentData.semester,
-                counsellorId: counsellor._id, // Store Counsellor's ObjectId
+                counsellorId: counsellor._id, 
             });
         }
 
-        fs.unlinkSync(req.filePath); // Remove file after processing
         res.send({ message: 'Students uploaded and saved successfully!' });
     } catch (error) {
         console.error('Error uploading or saving students:', error);

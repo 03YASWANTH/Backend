@@ -1,521 +1,5 @@
-// // import React, { useState } from 'react';
-// // import {
-// //   Table,
-// //   TableBody,
-// //   TableCell,
-// //   TableHead,
-// //   TableHeader,
-// //   TableRow,
-// // } from "@/components/ui/table";
-// // import { Button } from "@/components/ui/button";
-// // import { Input } from "@/components/ui/input";
-// // import { Pencil, Trash2, Save, X } from "lucide-react";
-
-// // const Students = () => {
-// //   const initialData = [
-// //     {
-// //       studentId: "STU001",
-// //       name: {
-// //         firstName: "John",
-// //         lastName: "Doe",
-// //       },
-// //       email: "john.doe@example.com",
-// //       currentYear: 2,
-// //       semester: 3,
-// //       counsellor: "COUN001",
-// //     }
-// //   ];
-
-// //   const [data, setData] = useState(initialData);
-// //   const [editingId, setEditingId] = useState(null);
-// //   const [editFormData, setEditFormData] = useState({});
-
-// //   const handleEditClick = (student) => {
-// //     setEditingId(student.studentId);
-// //     setEditFormData({
-// //       studentId: student.studentId,
-// //       firstName: student.name.firstName,
-// //       lastName: student.name.lastName,
-// //       email: student.email,
-// //       currentYear: student.currentYear,
-// //       semester: student.semester,
-// //       counsellor: student.counsellor,
-// //     });
-// //   };
-
-// //   const handleCancelClick = () => {
-// //     setEditingId(null);
-// //     setEditFormData({});
-// //   };
-
-// //   const handleDeleteClick = (studentId) => {
-// //     const newData = data.filter((item) => item.studentId !== studentId);
-// //     setData(newData);
-// //   };
-
-// //   const handleEditFormChange = (event) => {
-// //     const { name, value } = event.target;
-// //     setEditFormData((prevState) => ({
-// //       ...prevState,
-// //       [name]: value,
-// //     }));
-// //   };
-
-// //   const handleEditFormSubmit = (event) => {
-// //     event.preventDefault();
-
-// //     const editedStudent = {
-// //       studentId: editFormData.studentId,
-// //       name: {
-// //         firstName: editFormData.firstName,
-// //         lastName: editFormData.lastName,
-// //       },
-// //       email: editFormData.email,
-// //       currentYear: parseInt(editFormData.currentYear),
-// //       semester: parseInt(editFormData.semester),
-// //       counsellor: editFormData.counsellor,
-// //     };
-
-// //     const newData = data.map((item) =>
-// //       item.studentId === editingId ? editedStudent : item
-// //     );
-
-// //     setData(newData);
-// //     setEditingId(null);
-// //   };
-
-// //   return (
-// //     <div className="w-full">
-// //       <form onSubmit={handleEditFormSubmit}>
-// //         <Table>
-// //           <TableHeader>
-// //             <TableRow>
-// //               <TableHead>ID</TableHead>
-// //               <TableHead>Name</TableHead>
-// //               <TableHead>Email</TableHead>
-// //               <TableHead>Year</TableHead>
-// //               <TableHead>Semester</TableHead>
-// //               <TableHead>Counsellor ID</TableHead>
-// //               <TableHead>Actions</TableHead>
-// //             </TableRow>
-// //           </TableHeader>
-// //           <TableBody>
-// //             {data.map((student) => (
-// //               <TableRow key={student.studentId}>
-// //                 {editingId === student.studentId ? (
-// //                   <>
-// //                     <TableCell>
-// //                       {student.studentId}
-// //                     </TableCell>
-// //                     <TableCell>
-// //                       <div className="flex gap-2">
-// //                         <Input
-// //                           type="text"
-// //                           required
-// //                           placeholder="First Name"
-// //                           name="firstName"
-// //                           value={editFormData.firstName}
-// //                           onChange={handleEditFormChange}
-// //                         />
-// //                         <Input
-// //                           type="text"
-// //                           required
-// //                           placeholder="Last Name"
-// //                           name="lastName"
-// //                           value={editFormData.lastName}
-// //                           onChange={handleEditFormChange}
-// //                         />
-// //                       </div>
-// //                     </TableCell>
-// //                     <TableCell>
-// //                       <Input
-// //                         type="email"
-// //                         required
-// //                         placeholder="Email"
-// //                         name="email"
-// //                         value={editFormData.email}
-// //                         onChange={handleEditFormChange}
-// //                       />
-// //                     </TableCell>
-// //                     <TableCell>
-// //                       <Input
-// //                         type="number"
-// //                         required
-// //                         placeholder="Year"
-// //                         name="currentYear"
-// //                         value={editFormData.currentYear}
-// //                         onChange={handleEditFormChange}
-// //                       />
-// //                     </TableCell>
-// //                     <TableCell>
-// //                       <Input
-// //                         type="number"
-// //                         required
-// //                         placeholder="Semester"
-// //                         name="semester"
-// //                         value={editFormData.semester}
-// //                         onChange={handleEditFormChange}
-// //                       />
-// //                     </TableCell>
-// //                     <TableCell>
-// //                       <Input
-// //                         type="text"
-// //                         required
-// //                         placeholder="Counsellor ID"
-// //                         name="counsellor"
-// //                         value={editFormData.counsellor}
-// //                         onChange={handleEditFormChange}
-// //                       />
-// //                     </TableCell>
-// //                     <TableCell>
-// //                       <div className="flex gap-2">
-// //                         <Button type="submit" size="icon" variant="ghost">
-// //                           <Save className="h-4 w-4" />
-// //                         </Button>
-// //                         <Button
-// //                           type="button"
-// //                           size="icon"
-// //                           variant="ghost"
-// //                           onClick={handleCancelClick}
-// //                         >
-// //                           <X className="h-4 w-4" />
-// //                         </Button>
-// //                       </div>
-// //                     </TableCell>
-// //                   </>
-// //                 ) : (
-// //                   <>
-// //                     <TableCell>{student.studentId}</TableCell>
-// //                     <TableCell>
-// //                       {student.name.firstName} {student.name.lastName}
-// //                     </TableCell>
-// //                     <TableCell>{student.email}</TableCell>
-// //                     <TableCell>{student.currentYear}</TableCell>
-// //                     <TableCell>{student.semester}</TableCell>
-// //                     <TableCell>{student.counsellor}</TableCell>
-// //                     <TableCell>
-// //                       <div className="flex gap-2">
-// //                         <Button
-// //                           size="icon"
-// //                           variant="ghost"
-// //                           onClick={() => handleEditClick(student)}
-// //                         >
-// //                           <Pencil className="h-4 w-4" />
-// //                         </Button>
-// //                         <Button
-// //                           size="icon"
-// //                           variant="ghost"
-// //                           onClick={() => handleDeleteClick(student.studentId)}
-// //                         >
-// //                           <Trash2 className="h-4 w-4" />
-// //                         </Button>
-// //                       </div>
-// //                     </TableCell>
-// //                   </>
-// //                 )}
-// //               </TableRow>
-// //             ))}
-// //           </TableBody>
-// //         </Table>
-// //       </form>
-// //     </div>
-// //   );
-// // };
-
-// // export default Students;
-
-// import React, { useState, useEffect } from "react";
-// import {
-//   Table,
-//   TableBody,
-//   TableCell,
-//   TableContainer,
-//   TableHead,
-//   TableRow,
-//   Paper,
-//   TextField,
-//   IconButton,
-//   Button,
-//   CircularProgress,
-//   Select,
-//   MenuItem,
-// } from "@mui/material";
-// import {
-//   Edit as EditIcon,
-//   Delete as DeleteIcon,
-//   Save as SaveIcon,
-//   Cancel as CancelIcon,
-// } from "@mui/icons-material";
-
-// const StudentTable = () => {
-//   const [students, setStudents] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
-//   const [editingId, setEditingId] = useState(null);
-//   const [selectedYear, setSelectedYear] = useState(1);
-//   const [editFormData, setEditFormData] = useState({});
-
-//   // Fetch students data based on selected year
-//   const fetchStudents = async (year) => {
-//     try {
-//       setLoading(true);
-//       const response = await fetch(
-//         `http://localhost:3000/api/v1/admin/students/${year}`
-//       );
-//       if (!response.ok) {
-//         throw new Error("Failed to fetch students");
-//       }
-//       const data = await response.json();
-//       console.log(data);
-//       setStudents(data.data);
-//       setError(null);
-//     } catch (err) {
-//       setError(err.message);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-//   useEffect(() => {
-//     fetchStudents(selectedYear);
-//   }, [selectedYear]);
-
-//   const handleYearChange = (event) => {
-//     setSelectedYear(event.target.value);
-//   };
-
-//   const handleEditClick = (student) => {
-//     setEditingId(student.studentId);
-//     setEditFormData({
-//       studentId: student.studentId,
-//       firstName: student.name.firstName,
-//       lastName: student.name.lastName,
-//       email: student.email,
-//       currentYear: student.currentYear,
-//       semester: student.semester,
-//       counsellor: student.counsellor,
-//     });
-//   };
-
-//   const handleCancelClick = () => {
-//     setEditingId(null);
-//     setEditFormData({});
-//   };
-
-//   const handleEditFormChange = (event) => {
-//     const { name, value } = event.target;
-//     setEditFormData((prevState) => ({
-//       ...prevState,
-//       [name]: value,
-//     }));
-//   };
-
-//   const handleEditFormSubmit = async (event) => {
-//     event.preventDefault();
-//     try {
-//       const response = await fetch(
-//         `http://localhost:3000/api/v1/admin/students/${editingId}`,
-//         {
-//           method: "PUT",
-//           headers: {
-//             "Content-Type": "application/json",
-//           },
-//           body: JSON.stringify({
-//             studentId: editFormData.studentId,
-//             name: {
-//               firstName: editFormData.firstName,
-//               lastName: editFormData.lastName,
-//             },
-//             email: editFormData.email,
-//             currentYear: parseInt(editFormData.currentYear),
-//             semester: parseInt(editFormData.semester),
-//             counsellor: editFormData.counsellor,
-//           }),
-//         }
-//       );
-
-//       if (!response.ok) {
-//         throw new Error("Failed to update student");
-//       }
-
-//       // Refresh the student list
-//       fetchStudents(selectedYear);
-//       setEditingId(null);
-//     } catch (err) {
-//       setError(err.message);
-//     }
-//   };
-
-//   const handleDeleteClick = async (studentId) => {
-//     if (window.confirm("Are you sure you want to delete this student?")) {
-//       try {
-//         const response = await fetch(
-//           `http://localhost:3000/api/v1/admin/students/${studentId}`,
-//           {
-//             method: "DELETE",
-//           }
-//         );
-
-//         if (!response.ok) {
-//           throw new Error("Failed to delete student");
-//         }
-
-//         // Refresh the student list
-//         fetchStudents(selectedYear);
-//       } catch (err) {
-//         setError(err.message);
-//       }
-//     }
-//   };
-
-//   if (loading) {
-//     return (
-//       <div
-//         style={{ display: "flex", justifyContent: "center", padding: "20px" }}
-//       >
-//         <CircularProgress />
-//       </div>
-//     );
-//   }
-
-//   if (error) {
-//     return <div style={{ color: "red", padding: "20px" }}>Error: {error}</div>;
-//   }
-
-//   return (
-//     <Paper sx={{ width: "100%", overflow: "hidden" }}>
-//       <div style={{ padding: "20px" }}>
-//         <Select
-//           value={selectedYear}
-//           onChange={handleYearChange}
-//           sx={{ minWidth: 120 }}
-//         >
-//           <MenuItem value={1}>Year 1</MenuItem>
-//           <MenuItem value={2}>Year 2</MenuItem>
-//           <MenuItem value={3}>Year 3</MenuItem>
-//           <MenuItem value={4}>Year 4</MenuItem>
-//         </Select>
-//       </div>
-
-//       <TableContainer sx={{ maxHeight: 440 }}>
-//         <Table stickyHeader>
-//           <TableHead>
-//             <TableRow>
-//               <TableCell>ID</TableCell>
-//               <TableCell>Name</TableCell>
-//               <TableCell>Email</TableCell>
-//               <TableCell>Year</TableCell>
-//               <TableCell>Semester</TableCell>
-//               <TableCell>Counsellor ID</TableCell>
-//               <TableCell>Actions</TableCell>
-//             </TableRow>
-//           </TableHead>
-//           <TableBody>
-//             {students.map((student) => (
-//               <TableRow key={student.studentId}>
-//                 {editingId === student.studentId ? (
-//                   <>
-//                     <TableCell>{student.studentId}</TableCell>
-//                     <TableCell>
-//                       <div style={{ display: "flex", gap: "8px" }}>
-//                         <TextField
-//                           size="small"
-//                           name="firstName"
-//                           value={editFormData.firstName}
-//                           onChange={handleEditFormChange}
-//                         />
-//                         <TextField
-//                           size="small"
-//                           name="lastName"
-//                           value={editFormData.lastName}
-//                           onChange={handleEditFormChange}
-//                         />
-//                       </div>
-//                     </TableCell>
-//                     <TableCell>
-//                       <TextField
-//                         size="small"
-//                         name="email"
-//                         value={editFormData.email}
-//                         onChange={handleEditFormChange}
-//                       />
-//                     </TableCell>
-//                     <TableCell>
-//                       <TextField
-//                         size="small"
-//                         type="number"
-//                         name="currentYear"
-//                         value={editFormData.currentYear}
-//                         onChange={handleEditFormChange}
-//                       />
-//                     </TableCell>
-//                     <TableCell>
-//                       <TextField
-//                         size="small"
-//                         type="number"
-//                         name="semester"
-//                         value={editFormData.semester}
-//                         onChange={handleEditFormChange}
-//                       />
-//                     </TableCell>
-//                     <TableCell>
-//                       <TextField
-//                         size="small"
-//                         name="counsellor"
-//                         value={editFormData.counsellor}
-//                         onChange={handleEditFormChange}
-//                       />
-//                     </TableCell>
-//                     <TableCell>
-//                       <IconButton
-//                         onClick={handleEditFormSubmit}
-//                         color="primary"
-//                       >
-//                         <SaveIcon />
-//                       </IconButton>
-//                       <IconButton onClick={handleCancelClick} color="secondary">
-//                         <CancelIcon />
-//                       </IconButton>
-//                     </TableCell>
-//                   </>
-//                 ) : (
-//                   <>
-//                     <TableCell>{student.studentId}</TableCell>
-//                     <TableCell>
-//                       {student.name.firstName} {student.name.lastName}
-//                     </TableCell>
-//                     <TableCell>{student.email}</TableCell>
-//                     <TableCell>{student.currentYear}</TableCell>
-//                     <TableCell>{student.semester}</TableCell>
-//                     <TableCell>{student.counsellor}</TableCell>
-//                     <TableCell>
-//                       <IconButton
-//                         onClick={() => handleEditClick(student)}
-//                         color="primary"
-//                       >
-//                         <EditIcon />
-//                       </IconButton>
-//                       <IconButton
-//                         onClick={() => handleDeleteClick(student.studentId)}
-//                         color="error"
-//                       >
-//                         <DeleteIcon />
-//                       </IconButton>
-//                     </TableCell>
-//                   </>
-//                 )}
-//               </TableRow>
-//             ))}
-//           </TableBody>
-//         </Table>
-//       </TableContainer>
-//     </Paper>
-//   );
-// };
-
-// export default StudentTable;
-
-
 import React, { useState, useEffect } from 'react';
+import { Toaster, toast } from 'react-hot-toast';
 import {
   Table,
   TableBody,
@@ -528,151 +12,253 @@ import {
   CircularProgress,
   Select,
   MenuItem,
-  Modal,
-  Box,
-  Typography,
   TextField,
   Button,
-  Grid,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
+  Pagination,
+  InputAdornment,
+  FormControl,
+  Box,
+  Grid,
+  Typography,
+  InputLabel,
 } from '@mui/material';
-import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import {
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Search as SearchIcon,
+  Add as AddIcon,
+  CloudUpload as CloudUploadIcon,
+} from '@mui/icons-material';
 
 const StudentTable = () => {
   const [students, setStudents] = useState([]);
+  const [counsellors, setCounsellors] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [selectedYear, setSelectedYear] = useState(1);
-  const [openModal, setOpenModal] = useState(false);
-  const [editFormData, setEditFormData] = useState({
+  const [searchTerm, setSearchTerm] = useState('');
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    pageSize: 10,
+    totalPages: 1,
+  });
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [bulkUploadDialogOpen, setBulkUploadDialogOpen] = useState(false);
+
+  const [newStudent, setNewStudent] = useState({
     studentId: '',
-    firstName: '',
-    lastName: '',
+    name: {
+      firstName: '',
+      lastName: '',
+    },
     email: '',
     phoneNumber: '',
     fatherName: '',
     motherName: '',
     fatherPhoneNumber: '',
     motherPhoneNumber: '',
-    currentYear: '',
+    currentYear: selectedYear,
     semester: '',
-    counsellor: '',
+    counsellorId: '',
   });
+
+  const [editingStudent, setEditingStudent] = useState(null);
+  const [bulkFile, setBulkFile] = useState(null);
+
+  // Fetch Counsellors
+  const fetchCounsellors = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/v1/admin/counsellor');
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch counsellors');
+      }
+
+      const data = await response.json();
+      
+      // Transform counsellor data to include both display information
+      const transformedCounsellors = data.data.map(counsellor => ({
+        _id: counsellor._id,
+        counsellorId: counsellor.counsellorId,
+        fullName: `${counsellor.name.firstName} ${counsellor.name.lastName}`,
+        displayLabel: `${counsellor.counsellorId} - ${counsellor.name.firstName} ${counsellor.name.lastName}`
+      }));
+
+      setCounsellors(transformedCounsellors);
+    } catch (err) {
+      toast.error(`Counsellor Fetch Error: ${err.message}`);
+    }
+  };
 
   const fetchStudents = async (year) => {
     try {
       setLoading(true);
       const response = await fetch(`http://localhost:3000/api/v1/admin/students/${year}`);
+
       if (!response.ok) {
         throw new Error('Failed to fetch students');
       }
+
       const data = await response.json();
       setStudents(data.data);
-      setError(null);
+      setPagination((prev) => ({
+        ...prev,
+        totalPages: Math.ceil(data.data.length / prev.pageSize),
+      }));
+      
+      toast.success('Students fetched successfully');
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setLoading(false);
     }
   };
 
+  // Fetch counsellors and students when component mounts or year changes
   useEffect(() => {
-    fetchStudents(selectedYear);
+    const fetchData = async () => {
+      await Promise.all([
+        fetchStudents(selectedYear),
+        fetchCounsellors()
+      ]);
+    };
+    
+    fetchData();
   }, [selectedYear]);
 
   const handleYearChange = (event) => {
     setSelectedYear(event.target.value);
+    setPagination((prev) => ({ ...prev, currentPage: 1 }));
   };
 
-  const handleEditClick = (student) => {
-    setEditFormData({
-      studentId: student.studentId,
-      firstName: student.name.firstName,
-      lastName: student.name.lastName,
-      email: student.email,
-      phoneNumber: student.phoneNumber,
-      fatherName: student.fatherName,
-      motherName: student.motherName,
-      fatherPhoneNumber: student.fatherPhoneNumber,
-      motherPhoneNumber: student.motherPhoneNumber,
-      currentYear: student.currentYear,
-      semester: student.semester,
-      counsellor: student.counsellor,
-    });
-    setOpenModal(true);
+  const handlePageChange = (event, value) => {
+    setPagination((prev) => ({ ...prev, currentPage: value }));
   };
 
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    setEditFormData({});
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+    setPagination((prev) => ({ ...prev, currentPage: 1 }));
   };
 
-  const handleFormChange = (event) => {
-    const { name, value } = event.target;
-    setEditFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleAddStudent = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/api/v1/admin/students/${editFormData.studentId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          studentId: editFormData.studentId,
-          name: {
-            firstName: editFormData.firstName,
-            lastName: editFormData.lastName,
-          },
-          email: editFormData.email,
-          phoneNumber: editFormData.phoneNumber,
-          fatherName: editFormData.fatherName,
-          motherName: editFormData.motherName,
-          fatherPhoneNumber: editFormData.fatherPhoneNumber,
-          motherPhoneNumber: editFormData.motherPhoneNumber,
-          currentYear: parseInt(editFormData.currentYear),
-          semester: parseInt(editFormData.semester),
-          counsellor: editFormData.counsellor,
-        }),
+      const response = await fetch('http://localhost:3000/api/v1/admin/students', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: newStudent }),
       });
 
+      const result = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to update student');
+        throw new Error(result.errors?.[0]?.message || 'Failed to add student');
       }
 
-      // Refresh the student list
+      toast.success(result.message);
+      setAddDialogOpen(false);
       fetchStudents(selectedYear);
-      handleCloseModal();
+      
+      // Reset form
+      setNewStudent({
+        studentId: '',
+        name: { firstName: '', lastName: '' },
+        email: '',
+        phoneNumber: '',
+        fatherName: '',
+        motherName: '',
+        fatherPhoneNumber: '',
+        motherPhoneNumber: '',
+        currentYear: selectedYear,
+        semester: '',
+        counsellorId: '',
+      });
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     }
   };
 
-  const handleDeleteClick = async (studentId) => {
-    if (window.confirm('Are you sure you want to delete this student?')) {
-      try {
-        const response = await fetch(`http://localhost:3000/api/v1/admin/students/${studentId}`, {
-          method: 'DELETE',
-        });
+  const handleEditStudent = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/v1/admin/students/${editingStudent.studentId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: editingStudent }),
+      });
 
-        if (!response.ok) {
-          throw new Error('Failed to delete student');
-        }
+      const result = await response.json();
 
-        fetchStudents(selectedYear);
-      } catch (err) {
-        setError(err.message);
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to update student');
       }
+
+      toast.success(result.message);
+      setEditDialogOpen(false);
+      fetchStudents(selectedYear);
+    } catch (err) {
+      toast.error(err.message);
     }
   };
+
+  const handleDeleteStudent = async (studentId) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/v1/admin/students/${studentId}`, {
+        method: 'DELETE',
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to delete student');
+      }
+
+      toast.success(result.message);
+      fetchStudents(selectedYear);
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
+  const handleBulkUpload = async () => {
+    if (!bulkFile) {
+      toast.error('Please select a file to upload');
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append('file', bulkFile);
+  
+    try {
+      const response = await fetch('http://localhost:3000/api/v1/admin/bulkaddstudents', {
+        method: 'POST',
+        body: formData,
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to upload file');
+      }
+  
+      toast.success(result.message || 'Students uploaded successfully');
+      setBulkUploadDialogOpen(false);
+      fetchStudents(selectedYear);
+      setBulkFile(null);
+    } catch (err) {
+      toast.error(err.message || 'An error occurred during file upload');
+    }
+  };
+
+  const filteredStudents = students.filter(
+    (student) =>
+      student.studentId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      `${student.name.firstName} ${student.name.lastName}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+  );
 
   if (loading) {
     return (
@@ -682,231 +268,548 @@ const StudentTable = () => {
     );
   }
 
-  if (error) {
-    return (
-      <div style={{ color: 'red', padding: '20px' }}>
-        Error: {error}
-      </div>
-    );
-  }
-
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <div style={{ padding: '20px' }}>
-        <Select
-          value={selectedYear}
-          onChange={handleYearChange}
-          sx={{ minWidth: 120 }}
-        >
-          <MenuItem value={1}>Year 1</MenuItem>
-          <MenuItem value={2}>Year 2</MenuItem>
-          <MenuItem value={3}>Year 3</MenuItem>
-          <MenuItem value={4}>Year 4</MenuItem>
-        </Select>
-      </div>
+       <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '20px',
+              }}
+            >
+              <Box sx={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+                <Select
+                  value={selectedYear}
+                  onChange={handleYearChange}
+                  sx={{ minWidth: 120 }}
+                >
+                  <MenuItem value={1}>Year 1</MenuItem>
+                  <MenuItem value={2}>Year 2</MenuItem>
+                  <MenuItem value={3}>Year 3</MenuItem>
+                  <MenuItem value={4}>Year 4</MenuItem>
+                </Select>
       
-      <TableContainer sx={{ maxHeight: 440 }}>
-        <Table stickyHeader>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Year</TableCell>
-              <TableCell>Semester</TableCell>
-              <TableCell>Counsellor ID</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {students.map((student) => (
-              <TableRow key={student.studentId}>
-                <TableCell>{student.studentId}</TableCell>
-                <TableCell>
-                  {student.name.firstName} {student.name.lastName}
-                </TableCell>
-                <TableCell>{student.email}</TableCell>
-                <TableCell>{student.currentYear}</TableCell>
-                <TableCell>{student.semester}</TableCell>
-                <TableCell>{student.counsellor}</TableCell>
-                <TableCell>
-                  <IconButton onClick={() => handleEditClick(student)} color="primary">
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton onClick={() => handleDeleteClick(student.studentId)} color="error">
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                <TextField
+                  variant="outlined"
+                  placeholder="Search by Student ID or Name"
+                  value={searchTerm}
+                  onChange={handleSearch}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{ minWidth: 300 }}
+                />
+              </Box>
+      
+              <Box sx={{ display: 'flex', gap: '10px' }}>
+                <Button
+                  variant="contained"
+                  startIcon={<AddIcon />}
+                  onClick={() => setAddDialogOpen(true)}
+                >
+                  Add Student
+                </Button>
+      
+                <Button
+                  variant="contained"
+                  startIcon={<CloudUploadIcon />}
+                  onClick={() => setBulkUploadDialogOpen(true)}
+                >
+                  Bulk Upload
+                </Button>
+              </Box>
+            </Box>
+      
+            <TableContainer sx={{ maxHeight: 440 }}>
+              <Table stickyHeader>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>ID</TableCell>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Email</TableCell>
+                    <TableCell>Year</TableCell>
+                    <TableCell>Semester</TableCell>
+                    <TableCell>Counsellor ID</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredStudents
+                    .slice(
+                      (pagination.currentPage - 1) * pagination.pageSize,
+                      pagination.currentPage * pagination.pageSize
+                    )
+                    .map((student) => (
+                      <TableRow key={student.studentId}>
+                        <TableCell>{student.studentId}</TableCell>
+                        <TableCell>
+                          {student.name.firstName} {student.name.lastName}
+                        </TableCell>
+                        <TableCell>{student.email}</TableCell>
+                        <TableCell>{student.currentYear}</TableCell>
+                        <TableCell>{student.semester}</TableCell>
+                        <TableCell> {counsellors.filter((counsellor) => counsellor._id === student.counsellorId)[0]?.counsellorId || 'N/A'}</TableCell>
+                        <TableCell>
+                          <IconButton 
+                            color="primary"
+                            onClick={() => {
+                              setEditingStudent({
+                                ...student,
+                                name: { ...student.name }
+                              });
+                              setEditDialogOpen(true);
+                            }}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton 
+                            color="error"
+                            onClick={() => handleDeleteStudent(student.studentId)}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+      
+            <Box sx={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
+              <Pagination
+                count={pagination.totalPages}
+                page={pagination.currentPage}
+                onChange={handlePageChange}
+                color="primary"
+              />
+            </Box>
+      
 
-      {/* Edit Modal */}
+      {/* Existing table rendering and other components remain the same */}
+      
+      {/* Add Student Dialog - Counsellor Dropdown */}
+      <Dialog open={addDialogOpen} onClose={() => setAddDialogOpen(false)}>
+        <DialogTitle>Add Student</DialogTitle>
+        <DialogContent sx={{ display: 'grid', gap: '10px' }}>
+          <Grid container spacing={2}>
+            {/* Existing fields remain the same */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Student ID"
+                value={newStudent.studentId}
+                onChange={(e) =>
+                  setNewStudent((prev) => ({ ...prev, studentId: e.target.value }))
+                }
+                variant="outlined"
+                margin="dense"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="First Name"
+                value={newStudent.name.firstName}
+                onChange={(e) =>
+                  setNewStudent((prev) => ({
+                    ...prev,
+                    name: { ...prev.name, firstName: e.target.value }
+                  }))
+                }
+                variant="outlined"
+                margin="dense"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Last Name"
+                value={newStudent.name.lastName}
+                onChange={(e) =>
+                  setNewStudent((prev) => ({
+                    ...prev,
+                    name: { ...prev.name, lastName: e.target.value }
+                  }))
+                }
+                variant="outlined"
+                margin="dense"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Email"
+                value={newStudent.email}
+                onChange={(e) =>
+                  setNewStudent((prev) => ({ ...prev, email: e.target.value }))
+                }
+                variant="outlined"
+                margin="dense"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Phone Number"
+                value={newStudent.phoneNumber}
+                onChange={(e) =>
+                  setNewStudent((prev) => ({ ...prev, phoneNumber: e.target.value }))
+                }
+                variant="outlined"
+                margin="dense"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Semester"
+                value={newStudent.semester}
+                onChange={(e) =>
+                  setNewStudent((prev) => ({ ...prev, semester: e.target.value }))
+                }
+                variant="outlined"
+                margin="dense"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Father Name"
+                value={newStudent.fatherName}
+                onChange={(e) =>
+                  setNewStudent((prev) => ({ ...prev, fatherName: e.target.value }))
+                }
+                variant="outlined"
+                margin="dense"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Mother Name"
+                value={newStudent.motherName}
+                onChange={(e) =>
+                  setNewStudent((prev) => ({ ...prev, motherName: e.target.value }))
+                }
+                variant="outlined"
+                margin="dense"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Father Phone Number"
+                value={newStudent.fatherPhoneNumber}
+                onChange={(e) =>
+                  setNewStudent((prev) => ({ ...prev, fatherPhoneNumber: e.target.value }))
+                }
+                variant="outlined"
+                margin="dense"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Mother Phone Number"
+                value={newStudent.motherPhoneNumber}
+                onChange={(e) =>
+                  setNewStudent((prev) => ({ ...prev, motherPhoneNumber: e.target.value }))
+                }
+                variant="outlined"
+                margin="dense"
+              />
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
+              <Select
+                fullWidth
+                label="Counsellor"
+                value={newStudent.counsellorId}
+                onChange={(e) =>
+                  setNewStudent((prev) => ({ ...prev, counsellorId: e.target.value }))
+                }
+                variant="outlined"
+                displayEmpty
+              >
+                <MenuItem value="" disabled>
+                  Select Counsellor
+                </MenuItem>
+                {counsellors.map((counsellor) => (
+                  <MenuItem 
+                    key={counsellor._id} 
+                    value={counsellor.counsellorId}
+                  >
+                    {counsellor.displayLabel}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setAddDialogOpen(false)}
+            color="secondary"
+            variant="outlined"
+          >
+            Cancel
+          </Button>
+          <Button onClick={handleAddStudent} color="primary" variant="contained">
+            Add
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Edit Student Dialog - Counsellor Dropdown */}
       <Dialog 
-        open={openModal} 
-        onClose={handleCloseModal}
+        open={editDialogOpen} 
+        onClose={() => setEditDialogOpen(false)}
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>Edit Student Information</DialogTitle>
-        <form onSubmit={handleSubmit}>
-          <DialogContent>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Typography variant="subtitle2" gutterBottom>
-                  Student ID: {editFormData.studentId}
-                </Typography>
-              </Grid>
-              
-              {/* Personal Information */}
-              <Grid item xs={12}>
-                <Typography variant="subtitle1" gutterBottom>
-                  Personal Information
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  label="First Name"
-                  name="firstName"
-                  value={editFormData.firstName || ''}
-                  onChange={handleFormChange}
-                  required
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  label="Last Name"
-                  name="lastName"
-                  value={editFormData.lastName || ''}
-                  onChange={handleFormChange}
-                  required
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  label="Email"
-                  name="email"
-                  type="email"
-                  value={editFormData.email || ''}
-                  onChange={handleFormChange}
-                  required
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  label="Phone Number"
-                  name="phoneNumber"
-                  value={editFormData.phoneNumber || ''}
-                  onChange={handleFormChange}
-                  required
-                />
-              </Grid>
+        <DialogTitle>Edit Student</DialogTitle>
+        <DialogContent>
+          <Grid container spacing={2}>
+            {/* Existing fields remain the same */}
+             <Grid item xs={12} sm={6}>
+                          <TextField
+                            fullWidth
+                            label="Student ID"
+                            value={editingStudent?.studentId}
+                            disabled
+                            variant="outlined"
+                            margin="dense"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <TextField
+                            fullWidth
+                            label="First Name"
+                            value={editingStudent?.name?.firstName}
+                            onChange={(e) =>
+                              setEditingStudent((prev) => ({
+                                ...prev,
+                                name: { ...prev.name, firstName: e.target.value }
+                              }))
+                            }
+                            variant="outlined"
+                            margin="dense"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <TextField
+                            fullWidth
+                            label="Last Name"
+                            value={editingStudent?.name?.lastName}
+                            onChange={(e) =>
+                              setEditingStudent((prev) => ({
+                                ...prev,
+                                name: { ...prev.name, lastName: e.target.value }
+                              }))
+                            }
+                            variant="outlined"
+                            margin="dense"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <TextField
+                            fullWidth
+                            label="Email"
+                            value={editingStudent?.email}
+                            onChange={(e) =>
+                              setEditingStudent((prev) => ({ ...prev, email: e.target.value }))
+                            }
+                            variant="outlined"
+                            margin="dense"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <TextField
+                            fullWidth
+                            label="Phone Number"
+                            value={editingStudent?.phoneNumber}
+                            onChange={(e) =>
+                              setEditingStudent((prev) => ({ ...prev, phoneNumber: e.target.value }))
+                            }
+                            variant="outlined"
+                            margin="dense"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <TextField
+                            fullWidth
+                            label="Father Name"
+                            value={editingStudent?.fatherName}
+                            onChange={(e) =>
+                              setEditingStudent((prev) => ({ ...prev, fatherName: e.target.value }))
+                            }
+                            variant="outlined"
+                            margin="dense"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <TextField
+                            fullWidth
+                            label="Mother Name"
+                            value={editingStudent?.motherName}
+                            onChange={(e) =>
+                              setEditingStudent((prev) => ({ ...prev, motherName: e.target.value }))
+                            }
+                            variant="outlined"
+                            margin="dense"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <TextField
+                            fullWidth
+                            label="Father Phone Number"
+                            value={editingStudent?.fatherPhoneNumber}
+                            onChange={(e) =>
+                              setEditingStudent((prev) => ({ ...prev, fatherPhoneNumber: e.target.value }))
+                            }
+                            variant="outlined"
+                            margin="dense"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <TextField
+                            fullWidth
+                            label="Mother Phone Number"
+                            value={editingStudent?.motherPhoneNumber}
+                            onChange={(e) =>
+                              setEditingStudent((prev) => ({ ...prev, motherPhoneNumber: e.target.value }))
+                            }
+                            variant="outlined"
+                            margin="dense"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <TextField
+                            fullWidth
+                            label="Semester"
+                            value={editingStudent?.semester}
+                            onChange={(e) =>
+                              setEditingStudent((prev) => ({ ...prev, semester: e.target.value }))
+                            }
+                            variant="outlined"
+                            margin="dense"
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <TextField
+                            fullWidth
+                            label="Current Year"
+                            value={editingStudent?.currentYear}
+                            onChange={(e) =>
+                              setEditingStudent((prev) => ({ ...prev, currentYear: e.target.value }))
+                            }
+                            variant="outlined"
+                            margin="dense"
+                          />
+                        </Grid>
+                        
+                        {/* Counsellor Dropdown */}
+                        <Grid item xs={12} sm={6}>
+                          
+                          <FormControl fullWidth>
+                            <InputLabel>Counsellor</InputLabel>
+                          <Select
+                            fullWidth
+                            label="Counsellor"
+                            value={editingStudent?.counsellorId || ''}
+                            onChange={(e) =>
+                              setEditingStudent((prev) => ({
+                                ...prev,
+                                counsellorId: e.target.value,
+                              }))
+                            }
+                            variant="outlined"
+                            margin="dense"
+                          >
+                            <MenuItem value="" disabled>
+                              Select Counsellor
+                            </MenuItem>
+                            {counsellors.map((counsellor) => (
+                              <MenuItem key={counsellor._id} value={counsellor.counsellorId}>
+                                {counsellor.displayLabel}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                            </FormControl>
+                          
+                      
+                         
+                        </Grid>
 
-              {/* Parent Information */}
-              <Grid item xs={12}>
-                <Typography variant="subtitle1" gutterBottom>
-                  Parent Information
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  label="Father's Name"
-                  name="fatherName"
-                  value={editFormData.fatherName || ''}
-                  onChange={handleFormChange}
-                  required
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  label="Father's Phone"
-                  name="fatherPhoneNumber"
-                  value={editFormData.fatherPhoneNumber || ''}
-                  onChange={handleFormChange}
-                  required
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  label="Mother's Name"
-                  name="motherName"
-                  value={editFormData.motherName || ''}
-                  onChange={handleFormChange}
-                  required
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  label="Mother's Phone"
-                  name="motherPhoneNumber"
-                  value={editFormData.motherPhoneNumber || ''}
-                  onChange={handleFormChange}
-                  required
-                />
-              </Grid>
-
-              {/* Academic Information */}
-              <Grid item xs={12}>
-                <Typography variant="subtitle1" gutterBottom>
-                  Academic Information
-                </Typography>
-              </Grid>
-              <Grid item xs={4}>
-                <TextField
-                  fullWidth
-                  label="Year"
-                  name="currentYear"
-                  type="number"
-                  InputProps={{ inputProps: { min: 1, max: 4 } }}
-                  value={editFormData.currentYear || ''}
-                  onChange={handleFormChange}
-                  required
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <TextField
-                  fullWidth
-                  label="Semester"
-                  name="semester"
-                  type="number"
-                  InputProps={{ inputProps: { min: 1, max: 8 } }}
-                  value={editFormData.semester || ''}
-                  onChange={handleFormChange}
-                  required
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <TextField
-                  fullWidth
-                  label="Counsellor ID"
-                  name="counsellor"
-                  value={editFormData.counsellor || ''}
-                  onChange={handleFormChange}
-                  required
-                />
-              </Grid>
-            </Grid>
-          </DialogContent>
-          <DialogActions style={{
-            padding: '16px',
-          }}>
-            <Button onClick={handleCloseModal}>Cancel</Button>
-            <Button type="submit" variant="contained" color="primary">
-              Save Changes
-            </Button>
-          </DialogActions>
-        </form>
+                      </Grid>
+                    </DialogContent>
+                    <DialogActions>
+          <Button
+            onClick={() => setEditDialogOpen(false)}
+            color="secondary"
+            variant="outlined"
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleEditStudent} 
+            color="primary" 
+            variant="contained"
+          >
+            Update Student
+          </Button>
+        </DialogActions>
       </Dialog>
+       <Dialog 
+               open={bulkUploadDialogOpen} 
+               onClose={() => setBulkUploadDialogOpen(false)}
+             >
+               <DialogTitle>Bulk Upload Students</DialogTitle>
+               <DialogContent>
+                 <Box 
+                   sx={{ 
+                     display: 'flex', 
+                     flexDirection: 'column', 
+                     alignItems: 'center', 
+                     gap: 2 
+                   }}
+                 >
+                   <input
+                     type="file"
+                     accept=".xlsx, .xls, .csv"
+                     onChange={(e) => setBulkFile(e.target.files[0])}
+                     style={{ margin: '20px 0' }}
+                   />
+                   {bulkFile && (
+                     <Typography variant="body2">
+                       Selected File: {bulkFile.name}
+                     </Typography>
+                   )}
+                 </Box>
+               </DialogContent>
+               <DialogActions>
+                 <Button
+                   onClick={() => setBulkUploadDialogOpen(false)}
+                   color="secondary"
+                   variant="outlined"
+                 >
+                   Cancel
+                 </Button>
+                 <Button
+                   onClick={handleBulkUpload}
+                   color="primary"
+                   variant="contained"
+                   disabled={!bulkFile}
+                 >
+                   Upload
+                 </Button>
+               </DialogActions>
+             </Dialog>
     </Paper>
   );
 };

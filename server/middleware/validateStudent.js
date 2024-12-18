@@ -4,7 +4,8 @@ const { Student } = require("../models/student");
 // Define the Zod schema for student validation
 const studentSchema = z.object({
     studentId: z.string().min(1, { message: "Student ID is required" }),
-    name: z.string().min(1, { message: "First name is required" }),
+    firstName: z.string().min(1, { message: "First name is required" }),
+    lastName: z.string().min(1, { message: "Last name is required" }),
     email: z.string().email({ message: "Invalid email address" }),
     phoneNumber: z.string().min(1, { message: "Phone number is required" }),
     fatherName: z.string().min(1, { message: "Father's name is required" }),
@@ -23,7 +24,7 @@ const studentSchema = z.object({
 // Validation middleware
 const validateStudent = async (req, res, next) => {
     let studentsData =  req.fileData; // Assuming data is sent as JSON
-
+    console.log(studentsData);
     if (!Array.isArray(studentsData)) {
         return res.status(400).send({
             message: 'Validation Error',
