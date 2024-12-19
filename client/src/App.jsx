@@ -35,6 +35,7 @@ import Attendance from "./pages/Attendance";
 import Marks from "./pages/Marks";
 import ViewMarksOfBatch from "./components/ViewMarksOfBatch";
 
+
 const drawerWidth = 240;
 
 const theme = createTheme({

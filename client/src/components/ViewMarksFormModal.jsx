@@ -5,8 +5,9 @@ import {
   Modal,
   TextField,
   Typography,
+  Input,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -15,8 +16,20 @@ function ViewMarksFormModal({
   setViewMarksForm,
   formData,
   handleChange,
+  mode = "view",
 }) {
   const nav = useNavigate();
+  const [file, setFile] = useState(null);
+  const [remaining, setRemaining] = useState("");
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile && selectedFile.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+      setFile(selectedFile);
+    } else {
+      toast.error("Please upload a valid Excel file.");
+    }
+  };
 
   const handleSubmit = async () => {
     try {
@@ -24,19 +37,24 @@ function ViewMarksFormModal({
       if (!formData.batch || !formData.semester || !formData.examType) {
         toast.error("Please fill all the fields!", {
           style: {
-            border: "1px solid #713200",
+            border: "1px solid #d32f2f",
             padding: "16px",
-            color: "#713200",
+            color: "#d32f2f",
           },
           iconTheme: {
-            primary: "#713200",
+            primary: "#d32f2f",
             secondary: "#FFFAEE",
           },
         });
         return;
       }
 
-      // Convert semester from Roman numeral to number
+      // For the "upload" mode, validate that a file is selected
+      if (mode === "upload" && !file) {
+        toast.error("Please upload an Excel file!");
+        return;
+      }
+
       const semesterMapping = {
         I: 1,
         II: 2,
@@ -54,22 +72,49 @@ function ViewMarksFormModal({
         return;
       }
 
-      // Extract batch year
       const batchYear = formData.batch.split("-")[0];
 
-      // Navigate to marks page with correct parameters
-      nav(`/marks/${batchYear}/${semester}/${formData.examType}`);
-
+      if (mode === "view") {
+        // Navigate to marks page with correct parameters
+        nav(`/marks/${batchYear}/${semester}/${formData.examType}`);
+      } 
+      else if (mode === "upload") 
+      {
+        
+        const formDataToUpload = new FormData();
+        formDataToUpload.append("file", file); // Add the file
+        formDataToUpload.append("batch", formData.batch.split("-")[0]); // Add batch
+        formDataToUpload.append("semester", semester); // Add semester (mapped)
+        formDataToUpload.append("examType", formData.examType); // Add exam type
+  
+        // Send the form data to the backend
+        const response = await fetch("http://localhost:3000/api/v1/admin/marks/upload", {
+          method: "POST",
+          body: formDataToUpload, // FormData handles multipart
+        });
+  
+        if (response.ok) 
+        {
+          toast.success("Marks uploaded successfully!");
+          setFile(null); // Reset file input
+          setViewMarksForm(false); // Close modal
+        } 
+        else 
+        {
+          const errorResponse = await response.json();
+          toast.error(errorResponse.message || "Failed to upload marks!");
+        }
+      }
     } catch (error) {
       console.error("Error during submission:", error);
       toast.error("An error occurred while processing your request.", {
         style: {
-          border: "1px solid #713200",
+          border: "1px solid #d32f2f",
           padding: "16px",
-          color: "#713200",
+          color: "#d32f2f",
         },
         iconTheme: {
-          primary: "#713200",
+          primary: "#d32f2f",
           secondary: "#FFFAEE",
         },
       });
@@ -104,7 +149,7 @@ function ViewMarksFormModal({
           component="h2"
           sx={{ mb: 2, fontWeight: "bold" }}
         >
-          Enter Marks Details
+          {mode === "view" ? "View Marks Details" : "Upload Marks Details"}
         </Typography>
 
         <TextField
@@ -158,6 +203,17 @@ function ViewMarksFormModal({
           <MenuItem value="external">Semester</MenuItem>
         </TextField>
 
+        {mode === "upload" && (
+          <>
+            <Input
+              type="file"
+              accept=".xlsx, .xls"
+              onChange={handleFileChange}
+              sx={{ mb: 2 }}
+            />
+          </>
+        )}
+
         <Button
           fullWidth
           variant="contained"
@@ -170,7 +226,7 @@ function ViewMarksFormModal({
             ":hover": { bgcolor: "#0056b3" },
           }}
         >
-          Submit
+          {mode === "view" ? "View" : "Upload"}
         </Button>
       </Box>
     </Modal>

@@ -1,8 +1,6 @@
 import {
   Box,
   Button,
-  MenuItem,
-  Modal,
   TextField,
   Typography,
 } from "@mui/material";
@@ -11,12 +9,12 @@ import ViewMarksFormModal from "../components/ViewMarksFormModal";
 
 function Marks() {
   const [viewMarksForm, setViewMarksForm] = useState(false);
-  const [uploadMarksForm, setUploadMarksForm] = useState(false);
   const [formData, setFormData] = useState({
     batch: "",
     semester: "",
     examType: "",
   });
+  const [mode, setMode] = useState(""); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,6 +26,7 @@ function Marks() {
       <div className="flex gap-4">
         <Button
           onClick={() => {
+            setMode("view"); 
             setViewMarksForm(true);
           }}
           variant="contained"
@@ -35,7 +34,14 @@ function Marks() {
         >
           View Marks
         </Button>
-        <Button variant="contained" color="primary">
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            setMode("upload"); 
+            setViewMarksForm(true);
+          }}
+        >
           Upload Marks
         </Button>
       </div>
@@ -44,9 +50,11 @@ function Marks() {
         setViewMarksForm={setViewMarksForm}
         formData={formData}
         handleChange={handleChange}
+        mode={mode}
       />
     </>
   );
 }
 
 export default Marks;
+

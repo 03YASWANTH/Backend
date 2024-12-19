@@ -111,7 +111,7 @@ AdminRouter.put("/counsellor/:id",CounsellorUpdate);
 AdminRouter.get("/counsellor",CounsellorGet);
 AdminRouter.post("/counsellor", CounsellorPost);
 
-AdminRouter.post("/marks/upload/:sem", excelParser, bulkUploadMarks);
+AdminRouter.post("/marks/upload/", excelParser, bulkUploadMarks);
 AdminRouter.put("/marks/update", updateMarks);
 AdminRouter.get("/marks", getMarks);
 AdminRouter.delete("/marks")

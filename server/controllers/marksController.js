@@ -3,9 +3,9 @@ const mongoose = require("mongoose");
 
 const bulkUploadMarks = async (req, res) => {
   try {
-    const { sem } = req.params;
-    const { examType, batch } = req.body;
-    if (!sem || !examType) {
+    const { semester, examType, batch } = req.body;
+
+    if (!semester || !examType) {
       return res.status(400).json({
         message: "Semester and exam type are required",
       });
@@ -26,17 +26,29 @@ const bulkUploadMarks = async (req, res) => {
       });
     }
 
+    // Normalize "Student ID" column for case insensitivity
+    const studentIdKey = Object.keys(excelData[0]).find(
+      (key) => key.toLowerCase() === "student id"
+    );
+
+    if (!studentIdKey) {
+      return res.status(400).json({
+        message: "No 'Student ID' column found in the Excel sheet",
+      });
+    }
+
     const results = {};
 
+    // Get all subject columns (exclude "Student ID")
     const columns = Object.keys(excelData[0]).filter(
-      (col) => col !== "Roll No"
+      (col) => col.toLowerCase() !== "student id"
     );
 
     excelData.forEach((row) => {
-      const rollNo = row["Roll No"];
+      const rollNo = row[studentIdKey];
 
       if (!rollNo) {
-        console.warn(`Skipping row without roll number`);
+        console.warn(`Skipping row without a Student ID`);
         return;
       }
 
@@ -58,7 +70,7 @@ const bulkUploadMarks = async (req, res) => {
     });
 
     const marksDocument = new Marks({
-      semester: sem,
+      semester,
       examType,
       results,
       batch,
@@ -79,6 +91,7 @@ const bulkUploadMarks = async (req, res) => {
     });
   }
 };
+
 
 const updateMarks = async (req, res) => {
   try {
