@@ -15,13 +15,16 @@ import {
   DialogContent, 
   DialogTitle, 
   Grid, 
-  Typography 
+  Typography,
+  InputAdornment 
 } from '@mui/material';
 import { 
   Edit as EditIcon, 
   Delete as DeleteIcon, 
   Search as SearchIcon, 
-  Add as AddIcon 
+  Add as AddIcon,
+  Visibility as VisibilityIcon,
+  VisibilityOff as VisibilityOffIcon 
 } from '@mui/icons-material';
 import axios from '../../axios';
 import { toast } from 'react-hot-toast';
@@ -33,6 +36,8 @@ const CounsellorsManagement = () => {
   const [editingCounsellor, setEditingCounsellor] = useState(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [showEditPassword, setShowEditPassword] = useState(false);
+  const [showAddPassword, setShowAddPassword] = useState(false);
   const [newCounsellor, setNewCounsellor] = useState({
     counsellorId: '',
     name: { firstName: '', lastName: '' },
@@ -40,7 +45,8 @@ const CounsellorsManagement = () => {
     password: ''
   });
 
-  // Fetch counsellors
+  // ... (keep fetchCounsellors, useEffect, handleSearch, handleDelete unchanged)
+
   const fetchCounsellors = async () => {
     try {
       const response = await axios.get('admin/counsellor');
@@ -56,7 +62,6 @@ const CounsellorsManagement = () => {
     fetchCounsellors();
   }, []);
 
-  // Search functionality
   const handleSearch = (event) => {
     const term = event.target.value.toLowerCase();
     setSearchTerm(term);
@@ -70,53 +75,29 @@ const CounsellorsManagement = () => {
     setFilteredCounsellors(filtered);
   };
 
-  // Delete counsellor
   const handleDelete = async (counsellorId) => {
     try {
       await axios.delete(`admin/counsellor/${counsellorId}`);
       toast.success('Counsellor deleted successfully');
-      fetchCounsellors(); // Refresh the list
+      fetchCounsellors();
     } catch (error) {
       toast.error('Failed to delete counsellor');
       console.error('Error deleting counsellor:', error);
     }
   };
 
-  // Edit counsellor
   const handleEditOpen = (counsellor) => {
     setEditingCounsellor({...counsellor});
     setIsEditDialogOpen(true);
+    setShowEditPassword(false); // Reset password visibility when opening dialog
   };
 
   const handleEditClose = () => {
     setEditingCounsellor(null);
     setIsEditDialogOpen(false);
+    setShowEditPassword(false); // Reset password visibility when closing dialog
   };
 
-  const handleEditSave = async () => {
-    try {
-      // Ensure we're sending the correct data structure
-      console.log('editingCounsellor:', editingCounsellor);
-      const response = await axios.put(`admin/counsellor/${editingCounsellor.counsellorId}`, {
-        name: {
-          firstName: editingCounsellor.name.firstName,
-          lastName: editingCounsellor.name.lastName
-        },
-        email: editingCounsellor.email,
-        password: editingCounsellor.password
-      });
-      console.log('Response from server:', response.data);
-      
-      toast.success('Counsellor updated successfully');
-      fetchCounsellors();
-      handleEditClose();
-    } catch (error) {
-      toast.error('Failed to update counsellor');
-      console.error('Error updating counsellor:', error);
-    }
-  };
-
-  // Add counsellor
   const handleAddOpen = () => {
     setNewCounsellor({
       counsellorId: '',
@@ -125,10 +106,34 @@ const CounsellorsManagement = () => {
       password: ''
     });
     setIsAddDialogOpen(true);
+    setShowAddPassword(false); // Reset password visibility when opening dialog
   };
 
   const handleAddClose = () => {
     setIsAddDialogOpen(false);
+    setShowAddPassword(false); // Reset password visibility when closing dialog
+  };
+
+  // ... (keep handleEditSave and handleAddSave unchanged)
+
+  const handleEditSave = async () => {
+    try {
+      const response = await axios.put(`admin/counsellor/${editingCounsellor.counsellorId}`, {
+        name: {
+          firstName: editingCounsellor.name.firstName,
+          lastName: editingCounsellor.name.lastName
+        },
+        email: editingCounsellor.email,
+        password: editingCounsellor.password
+      });
+      
+      toast.success('Counsellor updated successfully');
+      fetchCounsellors();
+      handleEditClose();
+    } catch (error) {
+      toast.error('Failed to update counsellor');
+      console.error('Error updating counsellor:', error);
+    }
   };
 
   const handleAddSave = async () => {
@@ -145,6 +150,7 @@ const CounsellorsManagement = () => {
 
   return (
     <div>
+      {/* ... (keep search and add button section unchanged) */}
       <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
         <Grid item xs={12} md={6}>
           <TextField
@@ -189,7 +195,7 @@ const CounsellorsManagement = () => {
                 <TableCell>{counsellor.name.lastName}</TableCell>
                 <TableCell>{counsellor.email}</TableCell>
                 <TableCell>
-                  <IconButton color="primary"onClick={() => handleEditOpen(counsellor)}>
+                  <IconButton color="primary" onClick={() => handleEditOpen(counsellor)}>
                     <EditIcon />
                   </IconButton>
                   <IconButton color="error" onClick={() => handleDelete(counsellor.counsellorId)}>
@@ -202,7 +208,7 @@ const CounsellorsManagement = () => {
         </Table>
       </TableContainer>
 
-      {/* Edit Dialog */}
+      {/* Edit Dialog with modified password field */}
       <Dialog open={isEditDialogOpen} onClose={handleEditClose} maxWidth="md" fullWidth>
         <DialogTitle>Edit Counsellor</DialogTitle>
         <DialogContent>
@@ -214,6 +220,7 @@ const CounsellorsManagement = () => {
                 value={editingCounsellor?.counsellorId || ''}
                 disabled
                 sx={{ mt: 2 }}
+                required
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -226,6 +233,7 @@ const CounsellorsManagement = () => {
                   name: { ...prev.name, firstName: e.target.value }
                 }))}
                 sx={{ mt: 2 }}
+                required
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -238,6 +246,7 @@ const CounsellorsManagement = () => {
                   name: { ...prev.name, lastName: e.target.value }
                 }))}
                 sx={{ mt: 2 }}
+                required
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -250,19 +259,33 @@ const CounsellorsManagement = () => {
                   email: e.target.value
                 }))}
                 sx={{ mt: 2 }}
+                required
               />
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Password"
-                type="password"
+                type={showEditPassword ? 'text' : 'password'}
                 value={editingCounsellor?.password || ''}
                 onChange={(e) => setEditingCounsellor(prev => ({
                   ...prev,
                   password: e.target.value
                 }))}
                 sx={{ mt: 2 }}
+                required
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowEditPassword(!showEditPassword)}
+                        edge="end"
+                      >
+                        {showEditPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Grid>
           </Grid>
@@ -273,7 +296,7 @@ const CounsellorsManagement = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Add Dialog */}
+      {/* Add Dialog with modified password field */}
       <Dialog open={isAddDialogOpen} onClose={handleAddClose} maxWidth="md" fullWidth>
         <DialogTitle>Add New Counsellor</DialogTitle>
         <DialogContent>
@@ -288,6 +311,7 @@ const CounsellorsManagement = () => {
                   counsellorId: e.target.value
                 }))}
                 sx={{ mt: 2 }}
+                required
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -300,6 +324,7 @@ const CounsellorsManagement = () => {
                   name: { ...prev.name, firstName: e.target.value }
                 }))}
                 sx={{ mt: 2 }}
+                required
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -312,6 +337,7 @@ const CounsellorsManagement = () => {
                   name: { ...prev.name, lastName: e.target.value }
                 }))}
                 sx={{ mt: 2 }}
+                required
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -324,19 +350,33 @@ const CounsellorsManagement = () => {
                   email: e.target.value
                 }))}
                 sx={{ mt: 2 }}
+                required
               />
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Password"
-                type="password"
+                type={showAddPassword ? 'text' : 'password'}
                 value={newCounsellor.password}
                 onChange={(e) => setNewCounsellor(prev => ({
                   ...prev,
                   password: e.target.value
                 }))}
                 sx={{ mt: 2 }}
+                required
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowAddPassword(!showAddPassword)}
+                        edge="end"
+                      >
+                        {showAddPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Grid>
           </Grid>

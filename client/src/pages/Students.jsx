@@ -269,133 +269,141 @@ const StudentTable = () => {
   }
 
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-       <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '20px',
-              }}
-            >
-              <Box sx={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-                <Select
-                  value={selectedYear}
-                  onChange={handleYearChange}
-                  sx={{ minWidth: 120 }}
-                >
-                  <MenuItem value={1}>Year 1</MenuItem>
-                  <MenuItem value={2}>Year 2</MenuItem>
-                  <MenuItem value={3}>Year 3</MenuItem>
-                  <MenuItem value={4}>Year 4</MenuItem>
-                </Select>
-      
-                <TextField
-                  variant="outlined"
-                  placeholder="Search by Student ID or Name"
-                  value={searchTerm}
-                  onChange={handleSearch}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{ minWidth: 300 }}
-                />
-              </Box>
-      
-              <Box sx={{ display: 'flex', gap: '10px' }}>
-                <Button
-                  variant="contained"
-                  startIcon={<AddIcon />}
-                  onClick={() => setAddDialogOpen(true)}
-                >
-                  Add Student
-                </Button>
-      
-                <Button
-                  variant="contained"
-                  startIcon={<CloudUploadIcon />}
-                  onClick={() => setBulkUploadDialogOpen(true)}
-                >
-                  Bulk Upload
-                </Button>
-              </Box>
-            </Box>
-      
-            <TableContainer sx={{ maxHeight: 440 }}>
-              <Table stickyHeader>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>ID</TableCell>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Email</TableCell>
-                    <TableCell>Year</TableCell>
-                    <TableCell>Semester</TableCell>
-                    <TableCell>Counsellor ID</TableCell>
-                    <TableCell>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {filteredStudents
-                    .slice(
-                      (pagination.currentPage - 1) * pagination.pageSize,
-                      pagination.currentPage * pagination.pageSize
-                    )
-                    .map((student) => (
-                      <TableRow key={student.studentId}>
-                        <TableCell>{student.studentId}</TableCell>
-                        <TableCell>
-                          {student.name.firstName} {student.name.lastName}
-                        </TableCell>
-                        <TableCell>{student.email}</TableCell>
-                        <TableCell>{student.currentYear}</TableCell>
-                        <TableCell>{student.semester}</TableCell>
-                        <TableCell> {counsellors.filter((counsellor) => counsellor._id === student.counsellorId)[0]?.counsellorId || 'N/A'}</TableCell>
-                        <TableCell>
-                          <IconButton 
-                            color="primary"
-                            onClick={() => {
-                              setEditingStudent({
-                                ...student,
-                                name: { ...student.name }
-                              });
-                              setEditDialogOpen(true);
-                            }}
-                          >
-                            <EditIcon />
-                          </IconButton>
-                          <IconButton 
-                            color="error"
-                            onClick={() => handleDeleteStudent(student.studentId)}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-      
-            <Box sx={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
-              <Pagination
-                count={pagination.totalPages}
-                page={pagination.currentPage}
-                onChange={handlePageChange}
-                color="primary"
-              />
-            </Box>
-      
+    <Paper sx={{ width: "100%", overflow: "hidden" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "20px",
+        }}
+      >
+        <Box sx={{ display: "flex", gap: "20px", alignItems: "center" }}>
+          <Select
+            value={selectedYear}
+            onChange={handleYearChange}
+            sx={{ minWidth: 120 }}
+          >
+            <MenuItem value={1}>Year 1</MenuItem>
+            <MenuItem value={2}>Year 2</MenuItem>
+            <MenuItem value={3}>Year 3</MenuItem>
+            <MenuItem value={4}>Year 4</MenuItem>
+          </Select>
+
+          <TextField
+            variant="outlined"
+            placeholder="Search by Student ID or Name"
+            value={searchTerm}
+            onChange={handleSearch}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ minWidth: 300 }}
+          />
+        </Box>
+
+        <Box sx={{ display: "flex", gap: "10px" }}>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setAddDialogOpen(true)}
+          >
+            Add Student
+          </Button>
+
+          <Button
+            variant="contained"
+            startIcon={<CloudUploadIcon />}
+            onClick={() => setBulkUploadDialogOpen(true)}
+          >
+            Bulk Upload
+          </Button>
+        </Box>
+      </Box>
+
+      <TableContainer sx={{ maxHeight: 440 }}>
+        <Table stickyHeader>
+          <TableHead>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Year</TableCell>
+              <TableCell>Semester</TableCell>
+              <TableCell>Counsellor ID</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredStudents
+              .slice(
+                (pagination.currentPage - 1) * pagination.pageSize,
+                pagination.currentPage * pagination.pageSize
+              )
+              .map((student) => (
+                <TableRow key={student.studentId}>
+                  <TableCell>{student.studentId}</TableCell>
+                  <TableCell>
+                    {student.name.firstName} {student.name.lastName}
+                  </TableCell>
+                  <TableCell>{student.email}</TableCell>
+                  <TableCell>{student.currentYear}</TableCell>
+                  <TableCell>{student.semester}</TableCell>
+                  <TableCell>
+                    {" "}
+                    {counsellors.filter(
+                      (counsellor) => counsellor._id === student.counsellorId
+                    )[0]?.counsellorId || "N/A"}
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      color="primary"
+                      onClick={() => {
+                        const currentCounsellor = counsellors.find(
+                          (c) => c._id === student.counsellorId
+                        );
+                        setEditingStudent({
+                          ...student,
+                          name: { ...student.name },
+                          counsellorId: currentCounsellor?._id || "",
+                        });
+                        setEditDialogOpen(true);
+                      }}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      color="error"
+                      onClick={() => handleDeleteStudent(student.studentId)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      <Box sx={{ display: "flex", justifyContent: "center", padding: "20px" }}>
+        <Pagination
+          count={pagination.totalPages}
+          page={pagination.currentPage}
+          onChange={handlePageChange}
+          color="primary"
+        />
+      </Box>
 
       {/* Existing table rendering and other components remain the same */}
-      
+
       {/* Add Student Dialog - Counsellor Dropdown */}
       <Dialog open={addDialogOpen} onClose={() => setAddDialogOpen(false)}>
         <DialogTitle>Add Student</DialogTitle>
-        <DialogContent sx={{ display: 'grid', gap: '10px' }}>
+        <DialogContent sx={{ display: "grid", gap: "10px" }}>
           <Grid container spacing={2}>
             {/* Existing fields remain the same */}
             <Grid item xs={12} sm={6}>
@@ -404,10 +412,14 @@ const StudentTable = () => {
                 label="Student ID"
                 value={newStudent.studentId}
                 onChange={(e) =>
-                  setNewStudent((prev) => ({ ...prev, studentId: e.target.value }))
+                  setNewStudent((prev) => ({
+                    ...prev,
+                    studentId: e.target.value,
+                  }))
                 }
                 variant="outlined"
                 margin="dense"
+                required
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -418,11 +430,12 @@ const StudentTable = () => {
                 onChange={(e) =>
                   setNewStudent((prev) => ({
                     ...prev,
-                    name: { ...prev.name, firstName: e.target.value }
+                    name: { ...prev.name, firstName: e.target.value },
                   }))
                 }
                 variant="outlined"
                 margin="dense"
+                required
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -433,11 +446,12 @@ const StudentTable = () => {
                 onChange={(e) =>
                   setNewStudent((prev) => ({
                     ...prev,
-                    name: { ...prev.name, lastName: e.target.value }
+                    name: { ...prev.name, lastName: e.target.value },
                   }))
                 }
                 variant="outlined"
                 margin="dense"
+                required
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -450,6 +464,7 @@ const StudentTable = () => {
                 }
                 variant="outlined"
                 margin="dense"
+                required
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -458,10 +473,14 @@ const StudentTable = () => {
                 label="Phone Number"
                 value={newStudent.phoneNumber}
                 onChange={(e) =>
-                  setNewStudent((prev) => ({ ...prev, phoneNumber: e.target.value }))
+                  setNewStudent((prev) => ({
+                    ...prev,
+                    phoneNumber: e.target.value,
+                  }))
                 }
                 variant="outlined"
                 margin="dense"
+                required
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -470,10 +489,14 @@ const StudentTable = () => {
                 label="Semester"
                 value={newStudent.semester}
                 onChange={(e) =>
-                  setNewStudent((prev) => ({ ...prev, semester: e.target.value }))
+                  setNewStudent((prev) => ({
+                    ...prev,
+                    semester: e.target.value,
+                  }))
                 }
                 variant="outlined"
                 margin="dense"
+                required
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -482,10 +505,14 @@ const StudentTable = () => {
                 label="Father Name"
                 value={newStudent.fatherName}
                 onChange={(e) =>
-                  setNewStudent((prev) => ({ ...prev, fatherName: e.target.value }))
+                  setNewStudent((prev) => ({
+                    ...prev,
+                    fatherName: e.target.value,
+                  }))
                 }
                 variant="outlined"
                 margin="dense"
+                required
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -494,10 +521,14 @@ const StudentTable = () => {
                 label="Mother Name"
                 value={newStudent.motherName}
                 onChange={(e) =>
-                  setNewStudent((prev) => ({ ...prev, motherName: e.target.value }))
+                  setNewStudent((prev) => ({
+                    ...prev,
+                    motherName: e.target.value,
+                  }))
                 }
                 variant="outlined"
                 margin="dense"
+                required
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -506,10 +537,14 @@ const StudentTable = () => {
                 label="Father Phone Number"
                 value={newStudent.fatherPhoneNumber}
                 onChange={(e) =>
-                  setNewStudent((prev) => ({ ...prev, fatherPhoneNumber: e.target.value }))
+                  setNewStudent((prev) => ({
+                    ...prev,
+                    fatherPhoneNumber: e.target.value,
+                  }))
                 }
                 variant="outlined"
                 margin="dense"
+                required
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -518,30 +553,38 @@ const StudentTable = () => {
                 label="Mother Phone Number"
                 value={newStudent.motherPhoneNumber}
                 onChange={(e) =>
-                  setNewStudent((prev) => ({ ...prev, motherPhoneNumber: e.target.value }))
+                  setNewStudent((prev) => ({
+                    ...prev,
+                    motherPhoneNumber: e.target.value,
+                  }))
                 }
                 variant="outlined"
                 margin="dense"
+                required
               />
             </Grid>
-            
+
             <Grid item xs={12} sm={6}>
               <Select
                 fullWidth
                 label="Counsellor"
                 value={newStudent.counsellorId}
                 onChange={(e) =>
-                  setNewStudent((prev) => ({ ...prev, counsellorId: e.target.value }))
+                  setNewStudent((prev) => ({
+                    ...prev,
+                    counsellorId: e.target.value,
+                  }))
                 }
                 variant="outlined"
                 displayEmpty
+                required
               >
                 <MenuItem value="" disabled>
                   Select Counsellor
                 </MenuItem>
                 {counsellors.map((counsellor) => (
-                  <MenuItem 
-                    key={counsellor._id} 
+                  <MenuItem
+                    key={counsellor._id}
                     value={counsellor.counsellorId}
                   >
                     {counsellor.displayLabel}
@@ -559,15 +602,19 @@ const StudentTable = () => {
           >
             Cancel
           </Button>
-          <Button onClick={handleAddStudent} color="primary" variant="contained">
+          <Button
+            onClick={handleAddStudent}
+            color="primary"
+            variant="contained"
+          >
             Add
           </Button>
         </DialogActions>
       </Dialog>
 
       {/* Edit Student Dialog - Counsellor Dropdown */}
-      <Dialog 
-        open={editDialogOpen} 
+      <Dialog
+        open={editDialogOpen}
         onClose={() => setEditDialogOpen(false)}
         maxWidth="md"
         fullWidth
@@ -576,179 +623,209 @@ const StudentTable = () => {
         <DialogContent>
           <Grid container spacing={2}>
             {/* Existing fields remain the same */}
-             <Grid item xs={12} sm={6}>
-                          <TextField
-                            fullWidth
-                            label="Student ID"
-                            value={editingStudent?.studentId}
-                            disabled
-                            variant="outlined"
-                            margin="dense"
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                          <TextField
-                            fullWidth
-                            label="First Name"
-                            value={editingStudent?.name?.firstName}
-                            onChange={(e) =>
-                              setEditingStudent((prev) => ({
-                                ...prev,
-                                name: { ...prev.name, firstName: e.target.value }
-                              }))
-                            }
-                            variant="outlined"
-                            margin="dense"
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                          <TextField
-                            fullWidth
-                            label="Last Name"
-                            value={editingStudent?.name?.lastName}
-                            onChange={(e) =>
-                              setEditingStudent((prev) => ({
-                                ...prev,
-                                name: { ...prev.name, lastName: e.target.value }
-                              }))
-                            }
-                            variant="outlined"
-                            margin="dense"
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                          <TextField
-                            fullWidth
-                            label="Email"
-                            value={editingStudent?.email}
-                            onChange={(e) =>
-                              setEditingStudent((prev) => ({ ...prev, email: e.target.value }))
-                            }
-                            variant="outlined"
-                            margin="dense"
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                          <TextField
-                            fullWidth
-                            label="Phone Number"
-                            value={editingStudent?.phoneNumber}
-                            onChange={(e) =>
-                              setEditingStudent((prev) => ({ ...prev, phoneNumber: e.target.value }))
-                            }
-                            variant="outlined"
-                            margin="dense"
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                          <TextField
-                            fullWidth
-                            label="Father Name"
-                            value={editingStudent?.fatherName}
-                            onChange={(e) =>
-                              setEditingStudent((prev) => ({ ...prev, fatherName: e.target.value }))
-                            }
-                            variant="outlined"
-                            margin="dense"
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                          <TextField
-                            fullWidth
-                            label="Mother Name"
-                            value={editingStudent?.motherName}
-                            onChange={(e) =>
-                              setEditingStudent((prev) => ({ ...prev, motherName: e.target.value }))
-                            }
-                            variant="outlined"
-                            margin="dense"
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                          <TextField
-                            fullWidth
-                            label="Father Phone Number"
-                            value={editingStudent?.fatherPhoneNumber}
-                            onChange={(e) =>
-                              setEditingStudent((prev) => ({ ...prev, fatherPhoneNumber: e.target.value }))
-                            }
-                            variant="outlined"
-                            margin="dense"
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                          <TextField
-                            fullWidth
-                            label="Mother Phone Number"
-                            value={editingStudent?.motherPhoneNumber}
-                            onChange={(e) =>
-                              setEditingStudent((prev) => ({ ...prev, motherPhoneNumber: e.target.value }))
-                            }
-                            variant="outlined"
-                            margin="dense"
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                          <TextField
-                            fullWidth
-                            label="Semester"
-                            value={editingStudent?.semester}
-                            onChange={(e) =>
-                              setEditingStudent((prev) => ({ ...prev, semester: e.target.value }))
-                            }
-                            variant="outlined"
-                            margin="dense"
-                          />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                          <TextField
-                            fullWidth
-                            label="Current Year"
-                            value={editingStudent?.currentYear}
-                            onChange={(e) =>
-                              setEditingStudent((prev) => ({ ...prev, currentYear: e.target.value }))
-                            }
-                            variant="outlined"
-                            margin="dense"
-                          />
-                        </Grid>
-                        
-                        {/* Counsellor Dropdown */}
-                        <Grid item xs={12} sm={6}>
-                          
-                          <FormControl fullWidth>
-                            <InputLabel>Counsellor</InputLabel>
-                          <Select
-                            fullWidth
-                            label="Counsellor"
-                            value={editingStudent?.counsellorId || ''}
-                            onChange={(e) =>
-                              setEditingStudent((prev) => ({
-                                ...prev,
-                                counsellorId: e.target.value,
-                              }))
-                            }
-                            variant="outlined"
-                            margin="dense"
-                          >
-                            <MenuItem value="" disabled>
-                              Select Counsellor
-                            </MenuItem>
-                            {counsellors.map((counsellor) => (
-                              <MenuItem key={counsellor._id} value={counsellor.counsellorId}>
-                                {counsellor.displayLabel}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                            </FormControl>
-                          
-                      
-                         
-                        </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Student ID"
+                value={editingStudent?.studentId}
+                disabled
+                variant="outlined"
+                margin="dense"
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="First Name"
+                value={editingStudent?.name?.firstName}
+                onChange={(e) =>
+                  setEditingStudent((prev) => ({
+                    ...prev,
+                    name: { ...prev.name, firstName: e.target.value },
+                  }))
+                }
+                variant="outlined"
+                margin="dense"
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Last Name"
+                value={editingStudent?.name?.lastName}
+                onChange={(e) =>
+                  setEditingStudent((prev) => ({
+                    ...prev,
+                    name: { ...prev.name, lastName: e.target.value },
+                  }))
+                }
+                variant="outlined"
+                margin="dense"
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Email"
+                value={editingStudent?.email}
+                onChange={(e) =>
+                  setEditingStudent((prev) => ({
+                    ...prev,
+                    email: e.target.value,
+                  }))
+                }
+                variant="outlined"
+                margin="dense"
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Phone Number"
+                value={editingStudent?.phoneNumber}
+                onChange={(e) =>
+                  setEditingStudent((prev) => ({
+                    ...prev,
+                    phoneNumber: e.target.value,
+                  }))
+                }
+                variant="outlined"
+                margin="dense"
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Father Name"
+                value={editingStudent?.fatherName}
+                onChange={(e) =>
+                  setEditingStudent((prev) => ({
+                    ...prev,
+                    fatherName: e.target.value,
+                  }))
+                }
+                variant="outlined"
+                margin="dense"
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Mother Name"
+                value={editingStudent?.motherName}
+                onChange={(e) =>
+                  setEditingStudent((prev) => ({
+                    ...prev,
+                    motherName: e.target.value,
+                  }))
+                }
+                variant="outlined"
+                margin="dense"
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Father Phone Number"
+                value={editingStudent?.fatherPhoneNumber}
+                onChange={(e) =>
+                  setEditingStudent((prev) => ({
+                    ...prev,
+                    fatherPhoneNumber: e.target.value,
+                  }))
+                }
+                variant="outlined"
+                margin="dense"
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Mother Phone Number"
+                value={editingStudent?.motherPhoneNumber}
+                onChange={(e) =>
+                  setEditingStudent((prev) => ({
+                    ...prev,
+                    motherPhoneNumber: e.target.value,
+                  }))
+                }
+                variant="outlined"
+                margin="dense"
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Semester"
+                value={editingStudent?.semester}
+                onChange={(e) =>
+                  setEditingStudent((prev) => ({
+                    ...prev,
+                    semester: e.target.value,
+                  }))
+                }
+                variant="outlined"
+                margin="dense"
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Current Year"
+                value={editingStudent?.currentYear}
+                onChange={(e) =>
+                  setEditingStudent((prev) => ({
+                    ...prev,
+                    currentYear: e.target.value,
+                  }))
+                }
+                variant="outlined"
+                margin="dense"
+                required
+              />
+            </Grid>
 
-                      </Grid>
-                    </DialogContent>
-                    <DialogActions>
+            {/* Counsellor Dropdown */}
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel>Counsellor</InputLabel>
+                <Select
+                  fullWidth
+                  label="Counsellor"
+                  value={editingStudent?.counsellorId || ""}
+                  onChange={(e) =>
+                    setEditingStudent((prev) => ({
+                      ...prev,
+                      counsellorId: e.target.value,
+                    }))
+                  }
+                  variant="outlined"
+                  margin="dense"
+                >
+                  <MenuItem value="" disabled>
+                    Select Counsellor
+                  </MenuItem>
+                  {counsellors.map((counsellor) => (
+                    <MenuItem key={counsellor._id} value={counsellor._id}>
+                      {counsellor.displayLabel}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
           <Button
             onClick={() => setEditDialogOpen(false)}
             color="secondary"
@@ -756,60 +833,60 @@ const StudentTable = () => {
           >
             Cancel
           </Button>
-          <Button 
-            onClick={handleEditStudent} 
-            color="primary" 
+          <Button
+            onClick={handleEditStudent}
+            color="primary"
             variant="contained"
           >
             Update Student
           </Button>
         </DialogActions>
       </Dialog>
-       <Dialog 
-               open={bulkUploadDialogOpen} 
-               onClose={() => setBulkUploadDialogOpen(false)}
-             >
-               <DialogTitle>Bulk Upload Students</DialogTitle>
-               <DialogContent>
-                 <Box 
-                   sx={{ 
-                     display: 'flex', 
-                     flexDirection: 'column', 
-                     alignItems: 'center', 
-                     gap: 2 
-                   }}
-                 >
-                   <input
-                     type="file"
-                     accept=".xlsx, .xls, .csv"
-                     onChange={(e) => setBulkFile(e.target.files[0])}
-                     style={{ margin: '20px 0' }}
-                   />
-                   {bulkFile && (
-                     <Typography variant="body2">
-                       Selected File: {bulkFile.name}
-                     </Typography>
-                   )}
-                 </Box>
-               </DialogContent>
-               <DialogActions>
-                 <Button
-                   onClick={() => setBulkUploadDialogOpen(false)}
-                   color="secondary"
-                   variant="outlined"
-                 >
-                   Cancel
-                 </Button>
-                 <Button
-                   onClick={handleBulkUpload}
-                   color="primary"
-                   variant="contained"
-                   disabled={!bulkFile}
-                 >
-                   Upload
-                 </Button>
-               </DialogActions>
-             </Dialog>
+      <Dialog
+        open={bulkUploadDialogOpen}
+        onClose={() => setBulkUploadDialogOpen(false)}
+      >
+        <DialogTitle>Bulk Upload Students</DialogTitle>
+        <DialogContent>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 2,
+            }}
+          >
+            <input
+              type="file"
+              accept=".xlsx, .xls, .csv"
+              onChange={(e) => setBulkFile(e.target.files[0])}
+              style={{ margin: "20px 0" }}
+            />
+            {bulkFile && (
+              <Typography variant="body2">
+                Selected File: {bulkFile.name}
+              </Typography>
+            )}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setBulkUploadDialogOpen(false)}
+            color="secondary"
+            variant="outlined"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleBulkUpload}
+            color="primary"
+            variant="contained"
+            disabled={!bulkFile}
+          >
+            Upload
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Paper>
   );
 };
