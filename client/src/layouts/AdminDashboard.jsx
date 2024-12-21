@@ -66,10 +66,12 @@ function AdminDashboard() {
 
   return (
     <Box sx={{ display: "flex" }}>
-      <CssBaseline />
+    <CssBaseline />
       <AppBar
         position="fixed"
-        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1,
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+            background: 'linear-gradient(to br,  #f6f9fc, #283593); ',}}
       >
         <Toolbar>
           <IconButton

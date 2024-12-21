@@ -34,29 +34,12 @@ function App() {
       <Toaster />
       <ThemeProvider theme={theme}>
         <Routes>
-          {/* Public Route */}
-          <Route path="/signin" element={<SignInPage /> } 
+          
+          <Route path="/" element={<SignInPage /> } 
           />
-
-          {/* Protected Admin Route */}
           <Route
-            path="/admin"
-            element={
-              <ProtectedRoute>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Root Route */}
-          <Route
-            path="/"
-            element={
-              isAuthenticated ? 
-                <Navigate to={`/${userRole}`} /> : 
-                <Navigate to="/signin" />
-            }
-          />
+            path="/admin/*"
+            element={<AdminDashboard />}/>
         </Routes>
       </ThemeProvider>
     </BrowserRouter>
