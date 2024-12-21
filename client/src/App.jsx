@@ -1,42 +1,9 @@
-import React, { useState } from "react";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import {
-  AppBar,
-  Box,
-  CssBaseline,
-  Drawer,
-  IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Toolbar,
-  Typography,
-  Button,
-  ThemeProvider,
-  createTheme,
-} from "@mui/material";
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { ThemeProvider, createTheme } from "@mui/material";
 import { Toaster } from "react-hot-toast";
-import {
-  Menu as MenuIcon,
-  People as StudentsIcon,
-  School as FacultyIcon,
-  AdminPanelSettings as AdminIcon,
-  LibraryBooks as SubjectsIcon,
-  EventNote as AttendanceIcon,
-  Assignment as MarksIcon,
-} from "@mui/icons-material";
-
-import Students from "./pages/Students";
-import Faculty from "./pages/Faculty";
-import Admin from "./pages/Admin";
-import Subjects from "./pages/Subjects";
-import Attendance from "./pages/Attendance";
-import Marks from "./pages/Marks";
-import ViewMarksOfBatch from "./components/ViewMarksOfBatch";
-
-
-const drawerWidth = 240;
+import AdminDashboard from "./layouts/AdminDashboard";
+import SignInPage from "./pages/signin";
 
 const theme = createTheme({
   palette: {
@@ -46,114 +13,51 @@ const theme = createTheme({
   },
 });
 
+// Add Protected Route component
+const ProtectedRoute = ({ children }) => {
+  const token = localStorage.getItem('token');
+  const userRole = localStorage.getItem('userRole');
+  
+  if (!token) {
+    return <Navigate to="/signin" />;
+  }
+  
+  return children;
+};
+
 function App() {
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  const menuItems = [
-    { text: "Admin", icon: <AdminIcon />, path: "/" },
-    { text: "Students", icon: <StudentsIcon />, path: "/students" },
-    { text: "Faculty", icon: <FacultyIcon />, path: "/faculty" },
-    { text: "Subjects", icon: <SubjectsIcon />, path: "/subjects" },
-    { text: "Attendance", icon: <AttendanceIcon />, path: "/attendance" },
-    { text: "Marks", icon: <MarksIcon />, path: "/marks" },
-  ];
-
-  const drawer = (
-    <div>
-      <Toolbar />
-      <List>
-        {menuItems.map((item) => (
-          <ListItem 
-            key={item.text} 
-            component={Link} 
-            to={item.path}
-          >
-            <ListItemIcon>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.text} />
-          </ListItem>
-        ))}
-      </List>
-    </div>
-  );
+  const isAuthenticated = !!localStorage.getItem('token');
+  const userRole = localStorage.getItem('userRole');
 
   return (
     <BrowserRouter>
       <Toaster />
       <ThemeProvider theme={theme}>
-        <Box sx={{ display: "flex" }}>
-          <CssBaseline />
-          <AppBar
-            position="fixed"
-            sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          >
-            <Toolbar>
-              <IconButton
-                color="inherit"
-                edge="start"
-                onClick={() => setMobileOpen(!mobileOpen)}
-                sx={{ mr: 2, display: { sm: "none" } }}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
-                Counsellor Connect
-              </Typography>
-              <Button color="inherit">Sign In</Button>
-            </Toolbar>
-          </AppBar>
+        <Routes>
+          {/* Public Route */}
+          <Route path="/signin" element={<SignInPage /> } 
+          />
 
-          <Box
-            component="nav"
-            sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-          >
-            <Drawer
-              variant="temporary"
-              open={mobileOpen}
-              onClose={() => setMobileOpen(!mobileOpen)}
-              ModalProps={{ keepMounted: true }}
-              sx={{
-                display: { xs: "block", sm: "none" },
-                "& .MuiDrawer-paper": {
-                  boxSizing: "border-box",
-                  width: drawerWidth,
-                },
-              }}
-            >
-              {drawer}
-            </Drawer>
-            <Drawer
-              variant="permanent"
-              sx={{
-                display: { xs: "none", sm: "block" },
-                "& .MuiDrawer-paper": {
-                  boxSizing: "border-box",
-                  width: drawerWidth,
-                },
-              }}
-              open
-            >
-              {drawer}
-            </Drawer>
-          </Box>
+          {/* Protected Admin Route */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
 
-          <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-            <Toolbar />
-            <Routes>
-              <Route path="/" element={<Admin/>} />
-              <Route path="/students" element={<Students />} />
-              <Route path="/faculty" element={<Faculty />} />
-              <Route path="/subjects" element={<Subjects />} />
-              <Route path="/attendance" element={<Attendance />} />
-              <Route path="/marks">
-                <Route index element={<Marks />} />
-                <Route 
-                  path=":batch/:semester/:examType" 
-                  element={<ViewMarksOfBatch />} 
-                />
-              </Route>
-            </Routes>
-          </Box>
-        </Box>
+          {/* Root Route */}
+          <Route
+            path="/"
+            element={
+              isAuthenticated ? 
+                <Navigate to={`/${userRole}`} /> : 
+                <Navigate to="/signin" />
+            }
+          />
+        </Routes>
       </ThemeProvider>
     </BrowserRouter>
   );

@@ -1,6 +1,7 @@
 const express = require("express");
-const multer = require("multer"); // To handle file uploads
-const xlsx = require("xlsx"); // To parse Excel files
+const multer = require("multer"); 
+const xlsx = require("xlsx"); 
+const jwt  = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
 const { excelAAParser } = require("../middleware/attendanceParse");
@@ -13,6 +14,12 @@ const {
 const { Student } = require("../models/student");
 const { Counsellor } = require("../models/counsellor");
 const { Admin } = require("../models/admin");
+// const { authenticateAdmin, authenticateCounselor } = require("../middleware/authentication");
+
+
+require("dotenv").config({
+  path: "../.env",  
+});
 const AdminRouter = express.Router();
 
 // functions for student routes
@@ -76,36 +83,7 @@ AdminRouter.delete("/students/year/:year", deleteStudentsByYear);
 AdminRouter.post("/attendance", excelAAParser, addAttendance);
 //AdminRouter.put("/attendance/:id", updateAttendance);
 
-AdminRouter.post("/counsellor", async (req, res) => {
-  const { data } = req.body;
-  const counsellor = new Counsellor(data);
-  await counsellor.save();
-  res.send({
-    success: true,
-    message: "Counsellor added successfully!",
-  });
-});
-AdminRouter.get("/counsellor", async (req, res) => {
-  const counsellor = await Counsellor.find();
-  res.send({
-    success: true,
-    message: "counsellor data  fetched successfully!",
-    data: counsellor,
-  });
-});
-AdminRouter.put("/counsellor/:id", CounsellorUpdate);
 
-AdminRouter.delete("/counsellor/:id", async (req, res) => {
-  const { id } = req.params;
-  const counsellor = await Counsellor.findOneAndDelete({
-    counsellorId: id,
-  });
-  res.send({
-    success: true,
-    message: "Counsellor deleted successfully!",
-    data: counsellor,
-  });
-});
 AdminRouter.delete("/counsellor/:id",CounsellorDelete);
 AdminRouter.put("/counsellor/:id",CounsellorUpdate);
 AdminRouter.get("/counsellor",CounsellorGet);
@@ -115,6 +93,74 @@ AdminRouter.post("/marks/upload/", excelParser, bulkUploadMarks);
 AdminRouter.put("/marks/update", updateMarks);
 AdminRouter.get("/marks", getMarks);
 AdminRouter.delete("/marks")
+
+AdminRouter.post("/signin", async(req,res)=>{
+  try {
+    
+    const { email, password } = req.body;
+
+    
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide both email and password"
+      });
+    }
+
+    
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials"
+      });
+    }
+
+    
+    if(password==admin.password)
+    {
+      isPasswordValid = true;
+    }
+    else
+    {
+      isPasswordValid=false;
+    }
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials"
+      });
+    }
+
+    const token = jwt.sign(
+      {
+        id: admin._id,
+        email: admin.email,
+        role: 'admin'
+      },
+      process.env.SECRET_KEY,
+      {
+        expiresIn: '2h'  
+      }
+    );
+    res.status(200).json({
+      success: true,
+      message: "Successfully signed in",
+      token,
+      admin: {
+        id: admin._id,
+        email: admin.email
+      }
+    });
+
+  } catch (error) {
+    console.error('Signin error:', error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
+  }
+});
 
 module.exports = {
   AdminRouter,

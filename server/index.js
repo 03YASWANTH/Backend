@@ -20,6 +20,7 @@ app.get("/", (req, res) => {
 
 app.use('/api/v1/admin', AdminRouter);
 
+
 app.listen(process.env.PORT, () => {
   console.log("Server is running on",process.env.PORT);
 });
