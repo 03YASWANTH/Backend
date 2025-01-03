@@ -1,5 +1,6 @@
 const { connectDB } = require("./config/connectDatabase");
 const { AdminRouter } = require("./routes/admin");
+const { CounsellorRouter } = require("./routes/faculty");
 const express = require("express");
 const app = express();
 app.use(express.json());
@@ -19,6 +20,7 @@ app.get("/", (req, res) => {
 });
 
 app.use('/api/v1/admin', AdminRouter);
+app.use('/api/v1/counsellor', CounsellorRouter);
 
 
 app.listen(process.env.PORT, () => {

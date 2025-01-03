@@ -181,7 +181,7 @@ const ViewMarksOfBatch = () => {
     <Paper sx={{ width: '100%', overflow: 'hidden', p: 2 }}>
       <Button 
         startIcon={<BackIcon />} 
-        onClick={() => navigate('/marks')}
+        onClick={() => navigate('/admin/marks')}
         sx={{ mb: 2 }}
         variant="outlined"
       >

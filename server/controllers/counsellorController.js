@@ -82,13 +82,14 @@ const CounsellorUpdate = async (req, res) => {
 
 const CounsellorDelete = async (req, res) => {
   try {
-    const id = req.params;
+    const {id} = req.params;
+    
 
     // Find by counsellorId and delete
     const counsellor = await Counsellor.findOneAndDelete({
       counsellorId: id,
     });
-
+    console.log(counsellor);
     if (!counsellor) {
       return res.status(404).send({
         success: false,

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import {
   AppBar,
   Box,
@@ -12,7 +12,6 @@ import {
   ListItemText,
   Toolbar,
   Typography,
-  Button,
 } from "@mui/material";
 import {
   Menu as MenuIcon,
@@ -31,11 +30,13 @@ import Subjects from "../pages/Subjects";
 import Attendance from "../pages/Attendance";
 import Marks from "../pages/Marks";
 import ViewMarksOfBatch from "../components/ViewMarksOfBatch";
+import AttendanceMarksOfBatch from "../components/AttendanceMarksOfBatch";
 
 const drawerWidth = 240;
 
 function AdminDashboard() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const navigate = useNavigate(); // For navigation after logout
 
   const menuItems = [
     { text: "Dashboard", icon: <AdminIcon />, path: "/admin" },
@@ -45,6 +46,13 @@ function AdminDashboard() {
     { text: "Attendance", icon: <AttendanceIcon />, path: "/admin/attendance" },
     { text: "Marks", icon: <MarksIcon />, path: "/admin/marks" },
   ];
+
+  const handleLogout = () => {
+    
+    localStorage.removeItem("authToken"); 
+    sessionStorage.removeItem("authToken");
+    navigate("/");
+  };
 
   const drawer = (
     <div>
@@ -66,12 +74,14 @@ function AdminDashboard() {
 
   return (
     <Box sx={{ display: "flex" }}>
-    <CssBaseline />
+      <CssBaseline />
       <AppBar
         position="fixed"
-        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1,
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-            background: 'linear-gradient(to br,  #f6f9fc, #283593); ',}}
+        sx={{
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+          background: "linear-gradient(to br, #f6f9fc, #283593); ",
+        }}
       >
         <Toolbar>
           <IconButton
@@ -85,7 +95,12 @@ function AdminDashboard() {
           <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
             Admin Dashboard
           </Typography>
-          <Button color="inherit">Sign Out</Button>
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white px-4 py-2 rounded shadow hover:bg-red-600"
+          >
+            Logout
+          </button>
         </Toolbar>
       </AppBar>
 
@@ -130,12 +145,18 @@ function AdminDashboard() {
           <Route path="/students" element={<Students />} />
           <Route path="/faculty" element={<Faculty />} />
           <Route path="/subjects" element={<Subjects />} />
-          <Route path="/attendance" element={<Attendance />} />
           <Route path="/marks">
             <Route index element={<Marks />} />
             <Route 
               path=":batch/:semester/:examType" 
               element={<ViewMarksOfBatch />} 
+            />
+          </Route>
+          <Route path="/attendance">
+            <Route index element={<Attendance />} />
+            <Route 
+              path=":batch/:semester/:month" 
+              element={<AttendanceMarksOfBatch />} 
             />
           </Route>
         </Routes>

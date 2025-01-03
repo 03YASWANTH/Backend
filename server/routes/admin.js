@@ -40,7 +40,7 @@ const {
   updateSubject,
   bulkAddSubjects,
 } = require("../controllers/subjectController");
-const { addAttendance } = require("../controllers/attendanceController");
+const { addAttendance,getAttendance} = require("../controllers/attendanceController");
 const {
   bulkUploadMarks,
   updateMarks,
@@ -80,7 +80,8 @@ AdminRouter.get("/students/:year", getStudentsByYear);
 AdminRouter.delete("/students/:id", deleteStudent);
 AdminRouter.delete("/students/year/:year", deleteStudentsByYear);
 
-AdminRouter.post("/attendance", excelAAParser, addAttendance);
+AdminRouter.post("/attendance", getAttendance);
+AdminRouter.post("/Uattendance", excelAAParser, addAttendance);
 //AdminRouter.put("/attendance/:id", updateAttendance);
 
 

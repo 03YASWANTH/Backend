@@ -23,9 +23,7 @@ const Admin = () => {
           <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
           <div className="flex items-center space-x-4">
             <span className="text-lg font-medium text-gray-700">Admin Name</span>
-            <button className="bg-red-500 text-white px-4 py-2 rounded shadow hover:bg-red-600">
-              Logout
-            </button>
+           
           </div>
         </header>
 

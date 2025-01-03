@@ -52,7 +52,6 @@ const excelAAParser = (req, res, next) => {
 
         structuredData.push({ studentId, attendance });
       }
-
       req.fileData = structuredData; // Pass structured data to next middleware
       next();
     } catch (error) {

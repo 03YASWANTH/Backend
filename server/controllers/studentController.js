@@ -87,9 +87,10 @@ const addStudent = async (req, res) => {
 const updateStudent = async (req, res) => {
     const { id } = req.params;
     const { data } = req.body;
+    console.log(data);
 
     try {
-        const counsellor = await Counsellor.findOne({ counsellorId: data.counsellorId });
+        const counsellor = await Counsellor.findById(data.counsellorId);
         if (!counsellor) {
             return res.status(404).json({ message: `Counsellor with ID ${data.counsellorId} not found.` });
         }

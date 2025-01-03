@@ -5,7 +5,7 @@ import {
   Modal,
   TextField,
   Typography,
-  Input,
+  Input, 
 } from "@mui/material";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
@@ -26,7 +26,9 @@ function ViewMarksFormModal({
     const selectedFile = e.target.files[0];
     if (selectedFile && selectedFile.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
       setFile(selectedFile);
-    } else {
+    } 
+    else 
+    {
       toast.error("Please upload a valid Excel file.");
     }
   };
@@ -75,8 +77,7 @@ function ViewMarksFormModal({
       const batchYear = formData.batch.split("-")[0];
 
       if (mode === "view") {
-        // Navigate to marks page with correct parameters
-        nav(`/marks/${batchYear}/${semester}/${formData.examType}`);
+        nav(`/admin/marks/${batchYear}/${semester}/${formData.examType}`);
       } 
       else if (mode === "upload") 
       {

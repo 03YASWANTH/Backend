@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material";
 import { Toaster } from "react-hot-toast";
 import AdminDashboard from "./layouts/AdminDashboard";
+import CounsellorDashboard from "./layouts/CounsellorDashboard";
+import StudentDetailsDashboard from "./pages/studentDetailsDashboard";
 import SignInPage from "./pages/signin";
 
 const theme = createTheme({
@@ -35,11 +37,10 @@ function App() {
       <ThemeProvider theme={theme}>
         <Routes>
           
-          <Route path="/" element={<SignInPage /> } 
-          />
-          <Route
-            path="/admin/*"
-            element={<AdminDashboard />}/>
+          <Route path="/" element={<SignInPage /> } />
+          <Route path="/admin/*" element={<AdminDashboard />}/>
+          <Route path="/counsellor/:counsellorId/" element={<CounsellorDashboard />} />
+          <Route path="/counsellor/dashboard/:id" element={<StudentDetailsDashboard />} />
         </Routes>
       </ThemeProvider>
     </BrowserRouter>
