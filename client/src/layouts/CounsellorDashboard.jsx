@@ -105,7 +105,7 @@ const CounselorDashboard = () => {
                   <User className="h-6 w-6 text-white" />
                 </div>
                 <span className='text-white'>{counsellor}</span>
-                <button className="flex items-center space-x-2 bg-white/10 rounded-lg px-4 py-2 text-white hover:bg-white/20 transition-colors">
+                <button className="flex items-center space-x-2 bg-white/10 rounded-lg px-4 py-2 text-white hover:bg-white/20 transition-colors" onClick={() => navigate('/')}>
                   <LogOut className="h-4 w-4" />
                   <span>Logout</span>
                 </button>
