@@ -99,7 +99,7 @@ const CounselorDashboard = () => {
               </div>
             </div>
             
-            <div className="hidden md:flex items-center space-x-6">
+            <div className="md:flex items-center space-x-6">
               <div className="flex items-center space-x-6">
                 <div className='rounded-full bg-white/10 p-2'>
                   <User className="h-6 w-6 text-white" />
