@@ -1,36 +1,32 @@
 import React, { useState, useEffect } from "react";
+import SupremePerformanceBarChart from "../components/MarksTable";
+import { useLocation, useNavigate } from "react-router-dom";
+
 import {
   LineChart,
   Line,
   XAxis,
   YAxis,
   CartesianGrid,
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
   Tooltip,
   Legend,
   ResponsiveContainer,
-  BarChart,
-  Bar,
 } from "recharts";
 import {
   Calendar,
   GraduationCap,
   User,
-  Book,
-  Clock,
-  Award,
   ChevronLeft,
   LogOut,
-  Users,
+  Award,
 } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
-import CompactMarksVisualization from "../components/MarksTable";
-import QuantumMarksVisualization from "../components/MarksTable";
-import PerformanceCharts from "../components/MarksTable";
-import CosmicPerformanceVisualization from "../components/MarksTable";
-import InteractivePerformanceChart from "../components/MarksTable";
-import SupremePerformanceChart from "../components/MarksTable";
-import SupremePerformanceBarChart from "../components/MarksTable";
 
+// Tab Button Component
 const TabButton = ({ children, active, onClick }) => {
   return (
     <button
@@ -47,6 +43,7 @@ const TabButton = ({ children, active, onClick }) => {
   );
 };
 
+// Grade Card Component
 const GradeCard = ({ subject, grade }) => {
   const gradeColors = {
     "A+": "from-green-600/20 to-green-700/20",
@@ -116,30 +113,51 @@ const StudentDetailsDashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { studentData, counsellorName } = location.state || {};
+
   const [activeTab, setActiveTab] = useState("mid1");
-  const [selectedSemester, setSelectedSemester] = useState(
-    studentData?.semester || "1"
-  );
+  const [selectedSemester, setSelectedSemester] = useState("1");
+  const [selectedAttendanceSemester, setSelectedAttendanceSemester] =
+    useState("1");
+  const [attendanceData, setAttendanceData] = useState({
+    monthlyData: [],
+    subjects: {},
+  });
   const [marksData, setMarksData] = useState(null);
-  const [attendanceData, setAttendanceData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [gpa, setGpa] = useState({
     sgpa: undefined,
     cgpa: undefined,
   });
-
-  useEffect(() => {
-    if (studentData?.studentId) {
-      fetchAttendanceData();
-      fetchMarksData(activeTab, selectedSemester);
+  const generateShortForm = (subjectName) => {
+    if (subjectName.includes(" ")) {
+      return subjectName
+        .split(" ")
+        .map((word) => word[0])
+        .join("")
+        .toUpperCase();
     }
-  }, [studentData?.studentId, activeTab, selectedSemester]);
+    return subjectName.substring(0, 4).toUpperCase();
+  };
 
+  // Fetch Attendance Data
   const fetchAttendanceData = async () => {
     try {
+      setAttendanceData(null); // Reset data while loading
+
       const response = await fetch(
-        `http://localhost:3000/api/v1/counsellor/student/${studentData.studentId}/attendance`
+        `http://localhost:3000/api/v1/counsellor/getattendance`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            batch: "20" + studentData.studentId.substring(0, 2),
+            semesterId: selectedAttendanceSemester,
+            studentId: studentData.studentId,
+          }),
+        }
       );
 
       if (!response.ok) {
@@ -147,19 +165,36 @@ const StudentDetailsDashboard = () => {
       }
 
       const data = await response.json();
-      if (data.success) {
-        setAttendanceData(
-          data.data.map((item) => ({
-            month: item.month,
-            percentage: item.percentage,
-          }))
-        );
+
+      if (data.success && data.data?.monthlyData?.length > 0) {
+        const processedData = {
+          subjects: Object.fromEntries(
+            Object.entries(data.data.semesterStats.subjects).map(
+              ([key, value]) => [key.trim(), value]
+            )
+          ),
+          monthlyData: data.data.monthlyData.filter(
+            (month) => month.subjects?.length > 0
+          ),
+        };
+
+        setAttendanceData(processedData);
+      } else {
+        setAttendanceData({
+          subjects: {},
+          monthlyData: [],
+        });
       }
     } catch (err) {
       console.error("Error fetching attendance data:", err);
+      setAttendanceData({
+        subjects: {},
+        monthlyData: [],
+      });
     }
   };
 
+  // Fetch Marks Data
   const fetchMarksData = async (examType, semester) => {
     try {
       setLoading(true);
@@ -167,15 +202,15 @@ const StudentDetailsDashboard = () => {
       const yearCode = studentData.studentId.substring(0, 2);
       const batch = "20" + yearCode;
 
-      let endpoint = `http://localhost:3000/api/v1/counsellor/student/${studentData.studentId}/marks`;
-
       const queryParams = new URLSearchParams({
         semester: semester,
         batch: batch,
         examType: examType,
       });
 
-      const response = await fetch(`${endpoint}?${queryParams}`);
+      const response = await fetch(
+        `http://localhost:3000/api/v1/counsellor/student/${studentData.studentId}/marks?${queryParams}`
+      );
 
       if (!response.ok) {
         throw new Error(
@@ -197,7 +232,6 @@ const StudentDetailsDashboard = () => {
             grade,
           })
         );
-        console.log("Transformed data:", transformedData);
 
         const sgpa = transformedData.pop();
         const cgpa = transformedData.pop();
@@ -205,7 +239,6 @@ const StudentDetailsDashboard = () => {
           sgpa: sgpa.grade,
           cgpa: cgpa.grade,
         });
-        console.log(sgpa, cgpa);
         setMarksData({
           marks: transformedData,
         });
@@ -228,6 +261,19 @@ const StudentDetailsDashboard = () => {
     }
   };
 
+  // Effects
+  useEffect(() => {
+    if (studentData?.studentId) {
+      fetchAttendanceData();
+    }
+  }, [studentData?.studentId, selectedAttendanceSemester]); // Only fetch attendance data when selectedAttendanceSemester changes
+
+  useEffect(() => {
+    if (studentData?.studentId) {
+      fetchMarksData(activeTab, selectedSemester);
+    }
+  }, [studentData?.studentId, activeTab, selectedSemester]); // Only fetch marks data when selectedSemester or activeTab changes
+  // Event Handlers
   const handleTabChange = (newTab) => {
     setActiveTab(newTab);
     fetchMarksData(newTab, selectedSemester);
@@ -238,6 +284,7 @@ const StudentDetailsDashboard = () => {
     fetchMarksData(activeTab, newSemester);
   };
 
+  // Render Functions
   const renderGradeView = () => {
     if (!marksData?.marks) return null;
 
@@ -251,9 +298,6 @@ const StudentDetailsDashboard = () => {
                 <p className="text-5xl font-bold text-white animate-pulse">
                   {gpa?.sgpa || "N/A"}
                 </p>
-                <p className="text-sm text-white/80 mt-4">
-                  Semester Grade Point Average
-                </p>
               </div>
             </div>
           </div>
@@ -263,9 +307,6 @@ const StudentDetailsDashboard = () => {
                 <h3 className="text-3xl font-bold text-white mb-2">CGPA</h3>
                 <p className="text-5xl font-bold text-white animate-pulse">
                   {gpa?.cgpa || "N/A"}
-                </p>
-                <p className="text-sm text-white/80 mt-4">
-                  Cumulative Grade Point Average
                 </p>
               </div>
             </div>
@@ -285,6 +326,243 @@ const StudentDetailsDashboard = () => {
     );
   };
 
+  // Inside your StudentDetailsDashboard component, replace the renderAttendanceOverview with this:
+
+  const AttendanceOverview = ({
+    attendanceData,
+    selectedAttendanceSemester,
+    setSelectedAttendanceSemester,
+    studentData,
+  }) => {
+    const [selectedMonth, setSelectedMonth] = useState(null);
+
+    useEffect(() => {
+      if (attendanceData?.monthlyData?.length > 0) {
+        const monthWithData = attendanceData.monthlyData.find(
+          (month) => month.subjects?.length > 0
+        );
+        if (monthWithData) {
+          setSelectedMonth(monthWithData.month);
+        }
+      }
+    }, [attendanceData]);
+
+    const selectedMonthData = attendanceData?.monthlyData?.find(
+      (month) => month.month === selectedMonth
+    );
+
+    const pieChartData =
+      selectedMonthData?.subjects?.map((subject, index) => ({
+        name: subject.subject.trim(),
+        value: parseFloat(subject.percentage),
+        fill: `hsl(${index * 45}, 85%, 60%)`,
+      })) || [];
+
+    const CustomTooltip = ({ active, payload }) => {
+      if (active && payload && payload.length) {
+        return (
+          <div className="bg-white/10 backdrop-blur-md p-4 rounded-lg shadow-lg border border-white/20">
+            <p className="text-white font-medium">{payload[0]?.name}</p>
+            <p className="text-white/90">
+              Attendance: {payload[0]?.value.toFixed(2)}%
+            </p>
+          </div>
+        );
+      }
+      return null;
+    };
+
+    return (
+      <div className="bg-gradient-to-br from-slate-700 via-indigo-900 to-purple-900 rounded-xl shadow-2xl overflow-hidden">
+        <div className="border-b border-white/10 p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-white/10 rounded-lg backdrop-blur-sm">
+                <Calendar className="h-6 w-6 text-blue-200" />
+              </div>
+              <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-white">
+                Attendance Overview
+              </h1>
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <select
+                value={selectedAttendanceSemester}
+                onChange={(e) =>
+                  setSelectedAttendanceSemester(Number(e.target.value))
+                }
+                className="bg-white/5 text-blue-200 border border-blue-400/30 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400/50 transition-all"
+              >
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
+                  <option key={sem} value={sem} className="bg-indigo-900">
+                    Semester {sem}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6">
+          {!attendanceData ? (
+            <div className="h-80 flex items-center justify-center">
+              <p className="text-blue-200">Loading attendance data...</p>
+            </div>
+          ) : attendanceData.monthlyData?.length > 0 ? (
+            <div className="space-y-8">
+              {/* Monthly Trend Chart */}
+              <div className="bg-white/5 rounded-xl p-6 backdrop-blur-sm">
+                <h3 className="text-lg font-semibold text-blue-200 mb-6">
+                  Monthly Attendance Trend
+                </h3>
+                <div className="h-80">
+                  <ResponsiveContainer width="50%" height={300}>            
+                    <BarChart
+                      data={attendanceData.monthlyData.map((month) => ({
+                        month: month.month,
+                        percentage: parseFloat(month.overall.percentage),
+                      }))}
+                    >
+                      <defs>
+                        <linearGradient
+                          id="barGradient"
+                          x1="0"
+                          y1="0"
+                          x2="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor="#60A5FA"
+                            stopOpacity={1}
+                          />
+                          <stop
+                            offset="100%"
+                            stopColor="#3B82F6"
+                            stopOpacity={0.5}
+                          />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid
+                        strokeDasharray="2 2"
+                        stroke="rgba(255,255,255,0.1)"
+                      />
+                      <XAxis
+                        dataKey="month"
+                        stroke="#94A3B8"
+                        tick={{ fill: "#94A3B8" }}
+                      />
+                      <YAxis
+                        stroke="#94A3B8"
+                        tick={{ fill: "#94A3B8" }}
+                        domain={[0, 30]}
+                      />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Bar
+                        dataKey="percentage"
+                        name="Attendance"
+                        fill="url(#barGradient)"
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Subject Distribution and Monthly Analysis */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white/5 rounded-xl p-6 backdrop-blur-sm">
+                  <h3 className="text-lg font-semibold text-blue-200 mb-6">
+                    Subject Distribution
+                  </h3>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={pieChartData}
+                          dataKey="value"
+                          nameKey="name"
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={80}
+                          fill="#8884d8"
+                          label={({ name, value }) =>
+                            `${name}: ${value.toFixed(1)}%`
+                          }
+                        >
+                          {pieChartData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.fill} />
+                          ))}
+                        </Pie>
+                        <Tooltip content={<CustomTooltip />} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                <div className="bg-white/5 rounded-xl p-6 backdrop-blur-sm">
+                  <div className="flex flex-col h-full">
+                    <h3 className="text-lg font-semibold text-blue-200 mb-6">
+                      Monthly Analysis
+                    </h3>
+                    <div className="space-y-4 flex-grow">
+                      <select
+                        value={selectedMonth || ""}
+                        onChange={(e) => setSelectedMonth(e.target.value)}
+                        className="w-full bg-white/5 text-blue-200 border border-blue-400/30 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400/50 transition-all"
+                      >
+                        {attendanceData.monthlyData
+                          .filter((month) => month.subjects?.length > 0)
+                          .map((month) => (
+                            <option
+                              key={month.month}
+                              value={month.month}
+                              className="bg-indigo-900"
+                            >
+                              {month.month}
+                            </option>
+                          ))}
+                      </select>
+
+                      <div className="mt-6">
+                        {selectedMonthData?.subjects?.map((subject, index) => (
+                          <div key={index} className="mb-4">
+                            <div className="flex justify-between text-sm text-blue-200 mb-1">
+                              <span>{subject.subject.trim()}</span>
+                              <span>{subject.percentage}%</span>
+                            </div>
+                            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                              <div
+                                className="h-full rounded-full transition-all duration-500 ease-in-out"
+                                style={{
+                                  width: `${subject.percentage}%`,
+                                  backgroundColor: `hsl(${
+                                    index * 45
+                                  }, 85%, 60%)`,
+                                }}
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="h-80 flex items-center justify-center">
+              <p className="text-blue-200">
+                No attendance data available for this semester
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // Main Render
   if (!studentData) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -296,8 +574,9 @@ const StudentDetailsDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-gradient-to-r from-blue-700 to-blue-800 shadow-lg shadow-blue-900/50">
+    <div className="min-h-screen bg-slate-100">
+      {/* Navigation Bar */}
+      <nav className="bg-gradient-to-r from-indigo-900 via-purple-900 to-violet-900 shadow-lg">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center space-x-3">
@@ -311,7 +590,7 @@ const StudentDetailsDashboard = () => {
                 <GraduationCap className="h-8 w-8 text-white" />
               </div>
               <div className="flex flex-col">
-                <span className="text-2xl font-semibold tracking-tight text-white">
+                <span className="text-2xl font-semibold text-white">
                   Student Details
                 </span>
                 <span className="text-sm text-blue-100">Academic Overview</span>
@@ -324,7 +603,7 @@ const StudentDetailsDashboard = () => {
                   <User className="h-6 w-6 text-white" />
                 </div>
                 <span className="text-white">{counsellorName}</span>
-                <button className="flex items-center space-x-2 bg-white/10 rounded-lg px-4 py-2 text-white hover:bg-white/20 transition-colors">
+                <button  onClick={() => navigate('/')} className="flex items-center space-x-2 bg-white/10 rounded-lg px-4 py-2 text-white hover:bg-white/20 transition-colors">
                   <LogOut className="h-4 w-4" />
                   <span>Logout</span>
                 </button>
@@ -334,122 +613,99 @@ const StudentDetailsDashboard = () => {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-6 py-12 space-y-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-gradient-to-br from-blue-700 to-blue-800 rounded-xl p-6 shadow-lg">
-            <div className="flex items-center space-x-4 mb-6">
-              <div className="p-3 bg-white/10 rounded-lg">
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-6 py-12 space-y-8 relative z-10 bg-slate-100">
+        {/* Student Information Card */}
+        <div className="w-full">
+        <div className="bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 rounded-xl p-8 shadow-2xl">
+            <div className="flex items-center space-x-4 mb-8">
+              <div className="p-3 bg-white/10 rounded-lg flex-shrink-0">
                 <User className="h-6 w-6 text-white" />
               </div>
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-2xl font-bold text-white">
                 Personal Information
               </h2>
             </div>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="text-blue-100">
-                <p className="text-sm opacity-80">Name</p>
-                <p className="font-medium text-lg">{`${studentData.name.firstName} ${studentData.name.lastName}`}</p>
-              </div>
-              <div className="text-blue-100">
-                <p className="text-sm opacity-80">Student ID</p>
-                <p className="font-medium text-lg">{studentData.studentId}</p>
-              </div>
-              <div className="text-blue-100 col-span-2">
-                <p className="text-sm opacity-80">Email</p>
-                <p className="font-medium">{studentData.email}</p>
+                <p className="text-sm opacity-80 mb-1">Name</p>
+                <p className="font-semibold text-lg">
+                  {`${studentData.name.firstName} ${studentData.name.lastName}`}
+                </p>
               </div>
               <div className="text-blue-100">
-                <p className="text-sm opacity-80">Phone Number</p>
-                <p className="font-medium">{studentData.phoneNumber}</p>
+                <p className="text-sm opacity-80 mb-1">Student ID</p>
+                <p className="font-semibold text-lg">{studentData.studentId}</p>
               </div>
               <div className="text-blue-100">
-                <p className="text-sm opacity-80">Current Year</p>
-                <p className="font-medium">Year {studentData.currentYear}</p>
+                <p className="text-sm opacity-80 mb-1">Email</p>
+                <p className="font-semibold text-lg break-all">
+                  {studentData.email}
+                </p>
               </div>
               <div className="text-blue-100">
-                <p className="text-sm opacity-80">Semester</p>
-                <p className="font-medium">{studentData.semester}</p>
+                <p className="text-sm opacity-80 mb-1">Phone Number</p>
+                <p className="font-semibold text-lg">
+                  {studentData.phoneNumber}
+                </p>
               </div>
-            </div>
-          </div>
+              <div className="text-blue-100">
+                <p className="text-sm opacity-80 mb-1">Current Year</p>
+                <p className="font-semibold text-lg">
+                  Year {studentData.currentYear}
+                </p>
+              </div>
+              <div className="text-blue-100">
+                <p className="text-sm opacity-80 mb-1">Semester</p>
+                <p className="font-semibold text-lg">{studentData.semester}</p>
+              </div>
 
-          <div className="bg-gradient-to-br from-blue-700 to-blue-800 rounded-xl p-6 shadow-lg">
-            <div className="flex items-center space-x-4 mb-6">
-              <div className="p-3 bg-white/10 rounded-lg">
-                <Users className="h-6 w-6 text-white" />
-              </div>
-              <h2 className="text-xl font-semibold text-white">
-                Parent Information
-              </h2>
-            </div>
-            <div className="grid grid-cols-2 gap-6">
-              <div className="text-blue-100">
-                <p className="text-sm opacity-80">Father's Name</p>
-                <p className="font-medium">{studentData.fatherName}</p>
-              </div>
-              <div className="text-blue-100">
-                <p className="text-sm opacity-80">Father's Phone</p>
-                <p className="font-medium">{studentData.fatherPhoneNumber}</p>
-              </div>
-              <div className="text-blue-100">
-                <p className="text-sm opacity-80">Mother's Name</p>
-                <p className="font-medium">{studentData.motherName}</p>
-              </div>
-              <div className="text-blue-100">
-                <p className="text-sm opacity-80">Mother's Phone</p>
-                <p className="font-medium">{studentData.motherPhoneNumber}</p>
+              {/* Parent Information */}
+              <div className="text-blue-100 col-span-1 sm:col-span-2 lg:col-span-3 bg-white/10 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-white mb-4">
+                  Parent Information
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <p className="text-sm opacity-80 mb-1">Father's Name</p>
+                    <p className="font-semibold text-lg">
+                      {studentData.fatherName}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm opacity-80 mb-1">Father's Phone</p>
+                    <p className="font-semibold text-lg">
+                      {studentData.fatherPhoneNumber}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm opacity-80 mb-1">Mother's Name</p>
+                    <p className="font-semibold text-lg">
+                      {studentData.motherName}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm opacity-80 mb-1">Mother's Phone</p>
+                    <p className="font-semibold text-lg">
+                      {studentData.motherPhoneNumber}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-blue-700 to-blue-800 rounded-xl p-6 shadow-lg">
-          <div className="flex items-center space-x-4 mb-6">
-            <div className="p-3 bg-white/10 rounded-lg">
-              <Calendar className="h-6 w-6 text-white" />
-            </div>
-            <h2 className="text-xl font-semibold text-white">
-              Attendance Overview
-            </h2>
-          </div>
-          {attendanceData.length > 0 ? (
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={attendanceData}>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="rgba(255,255,255,0.1)"
-                  />
-                  <XAxis dataKey="month" stroke="#fff" />
-                  <YAxis stroke="#fff" />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "rgba(30, 41, 59, 0.9)",
-                      border: "none",
-                      borderRadius: "8px",
-                      color: "#fff",
-                    }}
-                  />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="percentage"
-                    stroke="#ffd700"
-                    strokeWidth={3}
-                    dot={{ fill: "#ffd700" }}
-                    activeDot={{ r: 8 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          ) : (
-            <div className="h-80 flex items-center justify-center">
-              <p className="text-white">No attendance data available</p>
-            </div>
-          )}
-        </div>
+        {/* Replace the renderAttendanceOverview call with this */}
+        <AttendanceOverview
+          attendanceData={attendanceData}
+          selectedAttendanceSemester={selectedAttendanceSemester}
+          setSelectedAttendanceSemester={setSelectedAttendanceSemester}
+          studentData={studentData}
+        />
 
-        <div className="bg-gradient-to-br from-blue-700 to-blue-800 rounded-xl p-6 shadow-lg">
+        {/* Academic Performance Section */}
+        <div className="bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 rounded-xl p-6 shadow-lg">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-4">
               <div className="p-3 bg-white/10 rounded-lg">
@@ -464,7 +720,7 @@ const StudentDetailsDashboard = () => {
               <label className="text-white text-sm">Semester:</label>
               <select
                 value={selectedSemester}
-                onChange={(e) => handleSemesterChange(e.target.value)}
+                onChange={(e) => handleSemesterChange(e.target.value)} // Only update selectedSemester
                 className="bg-white/10 text-white border-2 border-yellow-400 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
               >
                 {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
@@ -517,7 +773,7 @@ const StudentDetailsDashboard = () => {
             ) : (
               <div className="h-80">
                 <SupremePerformanceBarChart
-                  marksData={marksData}
+                  marksData={marksData || []} // Ensure marksData is not null
                   loading={loading}
                   error={error}
                 />

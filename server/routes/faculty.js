@@ -1,8 +1,114 @@
 const { Student } = require("../models/student");
 const { Counsellor } = require("../models/counsellor");
+const { Attendance } = require("../models/attendance");
 const { Marks } = require("../models/marks");
 
 const CounsellorRouter = require("express").Router();
+CounsellorRouter.post("/getattendance",async (req, res) => {
+  try {
+      const { batch,studentId, semesterId } = req.body;
+      console.log("Request body:", { batch, studentId, semesterId });
+      if (!studentId || !semesterId) {
+          return res.status(400).json({
+              success: false,
+              message: 'StudentId and semesterId are required'
+          });
+      }
+      const attendanceRecord = await Attendance.findOne({
+          batch,
+          studentId,
+          semesterId
+      });
+
+      if (!attendanceRecord) {
+          return res.status(404).json({
+              success: false,
+              message: 'No attendance records found for this student'
+          });
+        }
+      const monthlyData = attendanceRecord.attendanceData.map(monthData => {
+          // Get all subjects for this month
+          const subjects = Array.from(monthData.subjects.keys()).sort();
+
+          // Calculate subject-wise attendance
+          const subjectData = subjects.map(subject => {
+              const data = monthData.subjects.get(subject);
+              return {
+                  subject,
+                  presentDays: data.presentDays,
+                  totalDays: data.totalDays,
+                  percentage: ((data.presentDays / data.totalDays) * 100).toFixed(2)
+              };
+          });
+
+          // Calculate overall attendance for the month
+          const totalPresent = Array.from(monthData.subjects.values())
+              .reduce((sum, val) => sum + val.presentDays, 0);
+          const totalDays = Array.from(monthData.subjects.values())
+              .reduce((sum, val) => sum + val.totalDays, 0);
+          const overallPercentage = totalDays > 0 ? 
+              ((totalPresent / totalDays) * 100).toFixed(2) : 'N/A';
+
+          return {
+              month: monthData.month,
+              subjects: subjectData,
+              overall: {
+                  totalPresent,
+                  totalDays,
+                  percentage: overallPercentage
+              }
+          };
+      });
+
+      const semesterStats = {
+          subjects: {},
+          overall: {
+              totalPresent: 0,
+              totalDays: 0
+          }
+      };
+      monthlyData.forEach(month => {
+          month.subjects.forEach(subject => {
+              if (!semesterStats.subjects[subject.subject]) {
+                  semesterStats.subjects[subject.subject] = {
+                      totalPresent: 0,
+                      totalDays: 0
+                  };
+              }
+              semesterStats.subjects[subject.subject].totalPresent += subject.presentDays;
+              semesterStats.subjects[subject.subject].totalDays += subject.totalDays;
+              semesterStats.overall.totalPresent += subject.presentDays;
+              semesterStats.overall.totalDays += subject.totalDays;
+          });
+      });
+
+      // Calculate percentages for semester stats
+      Object.keys(semesterStats.subjects).forEach(subject => {
+          const subjectData = semesterStats.subjects[subject];
+          subjectData.percentage = ((subjectData.totalPresent / subjectData.totalDays) * 100).toFixed(2);
+      });
+      
+      semesterStats.overall.percentage = (
+          (semesterStats.overall.totalPresent / semesterStats.overall.totalDays) * 100
+      ).toFixed(2);
+
+      return res.status(200).json({
+          success: true,
+          data: {
+              studentId,
+              semesterId,
+              monthlyData,
+              semesterStats
+          }
+      });
+  } catch (error) {
+      return res.status(500).json({
+          success: false,
+          message: 'Error fetching student attendance',
+          error: error.message
+      });
+  }
+});
 
 CounsellorRouter.post("/signin", async (req, res) => {
   const { email, password } = req.body;

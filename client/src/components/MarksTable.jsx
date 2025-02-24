@@ -83,15 +83,18 @@ const SupremePerformanceBarChart = ({ marksData, loading, error }) => {
           margin={{ top: 20, right: 30, left: 20, bottom: 50 }}
           barSize={80}
           onMouseMove={(state) => {
-            if (
-              state.isTooltipActive &&
-              state.activeTooltipIndex !== undefined
-            ) {
+            if (state.isTooltipActive && state.activeTooltipIndex !== undefined) {
               setActiveSubject(processedData[state.activeTooltipIndex]);
             }
           }}
           onMouseLeave={() => setActiveSubject(null)}
         >
+          <defs>
+            <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#60A5FA" stopOpacity={1} />
+              <stop offset="100%" stopColor="#3B82F6" stopOpacity={0.5} />
+            </linearGradient>
+          </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
           <XAxis
             dataKey="subjectCode"
@@ -99,8 +102,13 @@ const SupremePerformanceBarChart = ({ marksData, loading, error }) => {
             interval={0}
             textAnchor="end"
             height={60}
+            tick={{ fill: "#fff" }}
           />
-          <YAxis stroke="#fff" domain={[0, 30]} />
+          <YAxis 
+            stroke="#fff" 
+            domain={[0, 30]}
+            tick={{ fill: "#fff" }} 
+          />
           <Tooltip
             content={<CustomTooltip />}
             cursor={{
@@ -108,10 +116,10 @@ const SupremePerformanceBarChart = ({ marksData, loading, error }) => {
             }}
           />
           <Bar
-            radius={[5, 5, 0, 0]}
+            radius={[4, 4, 0, 0]}
             dataKey="marks"
-            fill="#ffd700"
-            activeBar={{ fill: "#ff6b6b" }}
+            fill="url(#barGradient)"
+            activeBar={{ fill: "#60A5FA" }}
           />
         </BarChart>
       </ResponsiveContainer>

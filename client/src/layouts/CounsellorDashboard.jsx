@@ -86,8 +86,8 @@ const CounselorDashboard = () => {
   const groupedStudents = groupByYear(students);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-gradient-to-r from-blue-700 to-blue-800 shadow-lg shadow-blue-900/50">
+    <div className="min-h-screen bg-slate-100">
+      <nav className="bg-gradient-to-r from-slate-900 via-indigo-900 to-purple-900  shadow-lg shadow-blue-900/50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center space-x-3">
@@ -115,13 +115,13 @@ const CounselorDashboard = () => {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-6 py-12">
+      <main className="max-w-7xl mx-auto px-6 py-12 ">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {[1, 2, 3, 4].map((year) => (
             <button
               key={year}
               onClick={() => setSelectedYear(selectedYear === year ? null : year)}
-              className={`bg-gradient-to-br from-blue-700 to-blue-800 rounded-xl overflow-hidden transform transition-all duration-300 hover:scale-105 
+              className={`bg-gradient-to-br  from-slate-900 via-indigo-900 to-purple-900  rounded-xl overflow-hidden transform transition-all duration-300 hover:scale-105 
                 shadow-lg  
                 ${selectedYear === year ? 'ring-2 ring-yellow-400 shadow-yellow-400/30' : 'shadow-blue-900/30'}`}
             >
@@ -145,7 +145,7 @@ const CounselorDashboard = () => {
         <div className={`transition-all duration-500 ${selectedYear ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform -translate-y-4'}`}>
           {selectedYear && (
             <div className="rounded-xl shadow-lg shadow-blue-900/30">
-              <div className="bg-gradient-to-br from-blue-800 to-blue-800 p-6 rounded-t-xl relative overflow-hidden">
+              <div className="bg-gradient-to-br  from-slate-900 via-indigo-900 to-purple-900  p-6 rounded-t-xl relative overflow-hidden">
                 <div className="relative z-10">
                   <div className="flex items-center justify-between">
                     <div>
@@ -158,7 +158,7 @@ const CounselorDashboard = () => {
                 </div>
               </div>
               
-              <div className="p-6 bg-gradient-to-br from-blue-800 to-blue-600">
+              <div className="p-6 bg-gradient-to-br  from-slate-900 via-indigo-900 to-purple-900 ">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {groupedStudents[selectedYear].map((student) => (
                     <div 
