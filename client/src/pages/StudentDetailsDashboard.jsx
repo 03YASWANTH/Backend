@@ -484,7 +484,7 @@ const StudentDetailsDashboard = () => {
                           nameKey="name"
                           cx="50%"
                           cy="50%"
-                          outerRadius={80}
+                          outerRadius={70}
                           fill="#8884d8"
                           label={({ name, value }) =>
                             `${name}: ${value.toFixed(1)}%`

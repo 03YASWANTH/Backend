@@ -29,6 +29,7 @@ import Admin from "../pages/Admin";
 import Subjects from "../pages/Subjects";
 import Attendance from "../pages/Attendance";
 import Marks from "../pages/Marks";
+import Features from "../pages/Feat";
 import ViewMarksOfBatch from "../components/ViewMarksOfBatch";
 import AttendanceMarksOfBatch from "../components/AttendanceMarksOfBatch";
 
@@ -160,6 +161,7 @@ function AdminDashboard() {
               element={<AttendanceMarksOfBatch />} 
             />
           </Route>
+          <Route path="/features" element={<Features />} />
         </Routes>
       </Box>
     </Box>

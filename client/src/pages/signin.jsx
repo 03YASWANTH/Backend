@@ -33,7 +33,7 @@ const SignInPage = () => {
         localStorage.setItem('token', data.token);
         localStorage.setItem('adminInfo', JSON.stringify(data.admin));
         localStorage.setItem('userRole', 'admin');
-        navigate('/admin');
+        navigate('/admin/students');
       } else {
         setError(data.message || 'Failed to sign in');
       }
