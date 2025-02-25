@@ -1,40 +1,38 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Upload, Trash2 } from "lucide-react";
-
 
 function Features() {
   const [batch, setBatch] = useState("");
   const [year, setYear] = useState("");
-  const [students, setStudents] = useState([]);
 
-  
-  useEffect(() => {
-    if (batch && year) {
-      fetch(`/api/students?batch=${batch}&year=${year}`)
-        .then((res) => res.json())
-        .then((data) => setStudents(data))
-        .catch((err) => console.error("Error fetching students", err));
+  const BASE_URL = "http://localhost:3000/api/v1/admin";
+
+  // Promote students based on the selected year
+  const promoteBatch = () => {
+    if (!year) {
+      alert("Please select a year first");
+      return;
     }
-  }, [batch, year]);
 
-  // Promote student (increase year)
-  const promoteStudent = (id, currentYear) => {
-    fetch(`/api/students/${id}/promote`, { method: "PUT" })
-      .then(() => {
-        alert("Student promoted!");
-        setStudents((prev) =>
-          prev.map((s) => (s.id === id ? { ...s, year: currentYear + 1 } : s))
-        );
+    fetch(`${BASE_URL}/students/promote/${year}`, { method: "PUT" })
+      .then((res) => res.json())
+      .then((data) => {
+        alert(data.message);
       })
       .catch(() => alert("Promotion failed!"));
   };
 
-  // Delete student
-  const deleteStudent = (id) => {
-    fetch(`/api/students/${id}`, { method: "DELETE" })
-      .then(() => {
-        alert("Student deleted!");
-        setStudents((prev) => prev.filter((s) => s.id !== id));
+  // Delete students by year and delete batch-related data
+  const deleteBatch = () => {
+    if (!year) {
+      alert("Please select a year first");
+      return;
+    }
+
+    fetch(`${BASE_URL}/students/year/${year}`, { method: "DELETE" })
+      .then((res) => res.json())
+      .then((data) => {
+        alert(data.message || "Batch deleted successfully!");
       })
       .catch(() => alert("Delete failed!"));
   };
@@ -66,25 +64,16 @@ function Features() {
           <option value="4">4th Year</option>
         </select>
 
-        <div className="flex items-center gap-1 bg-blue-500 rounded-md text-white p-2 mr-2">
-          <span>
-            <Upload size={24} />
-          </span>
-          <button
-            className="bg-blue-500 text-white px-3  rounded-md"
-            onClick={() => promoteStudent(student.id, student.year)}
-          >
-            Promote
-          </button>
+        {/* Promote Button */}
+        <div className="flex items-center gap-1 bg-blue-500 rounded-md text-white p-2 cursor-pointer" onClick={promoteBatch}>
+          <Upload size={24} />
+          <button className="bg-blue-500 text-white px-3 rounded-md">Promote</button>
         </div>
-        <div className="flex items-center gap-1 bg-red-500 rounded-md text-white p-2 ml-2">
+
+        {/* Delete Button */}
+        <div className="flex items-center gap-1 bg-red-500 rounded-md text-white p-2 cursor-pointer" onClick={deleteBatch}>
           <Trash2 size={24} />
-          <button
-            className="bg-red-500 text-white px-3 rounded-md"
-            onClick={() => deleteStudent(student.id)}
-          >
-            Delete
-          </button>
+          <button className="bg-red-500 text-white px-3 rounded-md">Delete</button>
         </div>
       </div>
     </div>

@@ -158,8 +158,8 @@ const updateMarks = async (req, res) => {
         });
       }
 
-      // Log the existing results for debugging
-      console.log("Existing Results:", existingRecord.results);
+      // // Log the existing results for debugging
+      // console.log("Existing Results:", existingRecord.results);
 
       return res.status(404).json({
         message: "Student not found in the marks record",
@@ -208,8 +208,8 @@ const getMarks = async (req, res) => {
   try {
     const { semester, examType, batch } = req.query;
 
-    // Debugging logs
-    console.log("Received Query Parameters:", { semester, examType, batch });
+    // // Debugging logs
+    // console.log("Received Query Parameters:", { semester, examType, batch });
 
     // Validate query parameters
     if (!semester || !examType || !batch) {
@@ -224,7 +224,7 @@ const getMarks = async (req, res) => {
       examType,
       batch,
     });
-    console.log(marks);
+    // console.log(marks);
     if (!marks) {
       return res.status(404).json({
         message: "Marks not found",
@@ -245,8 +245,8 @@ const deleteMarks = async (req, res) => {
   try {
     const { semester, examType, batch, studentId } = req.data
 
-    // Debugging logs
-    console.log("Received Delete Parameters:", { semester, examType, batch, studentId });
+    // // Debugging logs
+    // console.log("Received Delete Parameters:", { semester, examType, batch, studentId });
 
     // Validate request body parameters
     if (!semester || !examType || !batch || !studentId) {

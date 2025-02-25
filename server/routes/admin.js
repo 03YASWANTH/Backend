@@ -30,6 +30,8 @@ const {
   getStudentsByYear,
   deleteStudent,
   deleteStudentsByYear,
+  deleteBatch,
+  promoteBatch,
 } = require("../controllers/studentController");
 
 const {
@@ -79,7 +81,8 @@ AdminRouter.put("/students/:id", updateStudent);
 AdminRouter.get("/students/:year", getStudentsByYear);
 AdminRouter.delete("/students/:id", deleteStudent);
 AdminRouter.delete("/students/year/:year", deleteStudentsByYear);
-
+AdminRouter.put("/students/promote/:year", promoteBatch);
+AdminRouter.delete("/students/batch/:batch/:year", deleteBatch);
 AdminRouter.post("/attendance", getAttendance);
 AdminRouter.post("/Uattendance", excelAAParser, addAttendance);
 //AdminRouter.put("/attendance/:id", updateAttendance);

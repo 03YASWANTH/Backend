@@ -266,7 +266,7 @@ const CounselorDashboard = () => {
             <div className="md:flex items-center space-x-6">
               <div className="flex items-center space-x-6">
                 <button 
-                  className="flex items-center space-x-2 bg-green-600 rounded-lg px-4 py-2 text-white hover:bg-green-700 transition-colors" 
+                  className="flex items-center space-x-2 bg-green-600 rounded-lg px-4 py-2 text-white hover:bg-green-700 transition-colors bg-opacity-90" 
                   onClick={openNoteModal}
                 >
                   <PlusCircle className="h-4 w-4" />
@@ -292,7 +292,7 @@ const CounselorDashboard = () => {
             <button
               key={year}
               onClick={() => setSelectedYear(selectedYear === year ? null : year)}
-              className={`bg-gradient-to-r from-indigo-900 via-purple-900 to-violet-900 shadow-lg rounded-xl overflow-hidden transform transition-all duration-300 hover:scale-105 
+              className={`bg-violet-900 shadow-lg rounded-xl overflow-hidden transform transition-all duration-300 hover:scale-105 
     
                 ${selectedYear === year ? 'ring-2 ring-yellow-400 shadow-yellow-400/30' : 'shadow-blue-900/30'}`}
             >

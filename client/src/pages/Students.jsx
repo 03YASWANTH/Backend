@@ -172,7 +172,7 @@ const StudentTable = () => {
         motherName: '',
         fatherPhoneNumber: '',
         motherPhoneNumber: '',
-        currentYear: selectedYear,
+        currentYear: '',
         semester: '',
         counsellorId: '',
       });
@@ -476,6 +476,22 @@ const StudentTable = () => {
                   setNewStudent((prev) => ({
                     ...prev,
                     phoneNumber: e.target.value,
+                  }))
+                }
+                variant="outlined"
+                margin="dense"
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Year"
+                value={newStudent.currentYear}
+                onChange={(e) =>
+                  setNewStudent((prev) => ({
+                    ...prev,
+                    currentYear: e.target.value,
                   }))
                 }
                 variant="outlined"

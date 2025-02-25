@@ -153,6 +153,64 @@ const deleteStudentsByYear = async (req, res) => {
         data: student,
     });
 };
+const promoteBatch = async (req, res) => {
+    try {
+      const { year } = req.params;
+      const currentYear = parseInt(year);
+  
+      if (!currentYear || currentYear < 1 || currentYear > 4) {
+        return res.status(400).json({ message: "Invalid year provided" });
+      }
+  
+      const students = await Student.find({ currentYear });
+  
+      if (students.length === 0) {
+        return res.status(404).json({ message: "No students found for this year" });
+      }
+  
+      // Check if any students are in their final year
+      const finalYearStudents = students.filter((s) => s.currentYear === 4);
+      if (finalYearStudents.length > 0) {
+        return res.status(400).json({ message: "Some students are in their final year and cannot be promoted" });
+      }
+  
+      // Promote students to the next year
+      await Student.updateMany({ currentYear }, { $inc: { currentYear: 1 } });
+  
+      return res.status(200).json({ message: "Students promoted successfully!" });
+    } catch (error) {
+      console.error("Error in promoting students:", error);
+      return res.status(500).json({ message: "Failed to promote students" });
+    }
+  };
+  
+  
+  const deleteBatch = async (req, res) => {
+    try {
+      const { batch, year } = req.params;
+      const currentYear = parseInt(year);
+  
+      if (!currentYear) {
+        return res.status(400).json({ error: "Invalid year provided" });
+      }
+  
+      // 1️⃣ Delete students from the Student collection based on batch & currentYear
+      const deletedStudents = await Student.deleteMany({ currentYear });
+  
+      // 2️⃣ Delete corresponding Marks and Attendance data using batch
+      await Marks.deleteMany({ batch });
+      await Attendance.deleteMany({ batch });
+  
+      res.status(200).json({
+        message: "Students, marks, and attendance data deleted successfully",
+        deletedStudents: deletedStudents.deletedCount,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to delete students and related data" });
+    }
+  };
+  
 
 module.exports = {
     bulkAddStudents,
@@ -161,4 +219,6 @@ module.exports = {
     getStudentsByYear,
     deleteStudent,
     deleteStudentsByYear,
+    deleteBatch,
+    promoteBatch,
 };

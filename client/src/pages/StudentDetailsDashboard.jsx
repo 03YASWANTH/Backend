@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import SupremePerformanceBarChart from "../components/MarksTable";
 import { useLocation, useNavigate } from "react-router-dom";
+import { saveAs } from "file-saver"; // For Excel export
+import { PDFDownloadLink } from "@react-pdf/renderer"; // For PDF export
+import StudentReportPDF from "../components/StudentReportPDF"; // Custom PDF component
 
 import {
   LineChart,
@@ -24,6 +27,7 @@ import {
   ChevronLeft,
   LogOut,
   Award,
+  Download,
 } from "lucide-react";
 
 // Tab Button Component
@@ -69,7 +73,6 @@ const GradeCard = ({ subject, grade }) => {
     <div
       className={`bg-white/10 p-4 rounded-xl backdrop-blur-sm transform transition-all duration-300 hover:scale-105
         hover:bg-white/15 border-2 border-transparent hover:border-yellow-500 cursor-pointer group hover:-translate-y-1 hover:shadow-lg hover:shadow-yellow-500/1`}
-
     >
       <h3 className="text-lg font-semibold text-white mb-2">{subject}</h3>
       <div className="flex justify-between items-center">
@@ -88,27 +91,66 @@ const GradeCard = ({ subject, grade }) => {
   );
 };
 
-const PerformanceMetric = ({ label, value, highlight = false }) => (
-  <div
-    className={`p-6 rounded-xl ${
-      highlight
-        ? "bg-gradient-to-r from-yellow-400 to-yellow-600"
-        : "bg-white/10"
-    }`}
-  >
-    <p className={`text-sm ${highlight ? "text-yellow-100" : "text-blue-200"}`}>
-      {label}
-    </p>
-    <p
-      className={`text-3xl font-bold ${
-        highlight ? "text-white" : "text-yellow-400"
-      }`}
-    >
-      {value}
-    </p>
-  </div>
-);
+// Performance Badge Component
+const PerformanceBadge = ({ attendance, marks }) => {
+  const getPerformanceStatus = () => {
+    if (attendance < 75 || marks < 50) return "Critical";
+    if (marks >= 50 && marks < 75) return "Warning";
+    return "Good";
+  };
 
+  const status = getPerformanceStatus();
+
+  const badgeColors = {
+    Critical: "bg-red-500",
+    Warning: "bg-yellow-500",
+    Good: "bg-green-500",
+  };
+
+  return (
+    <div className="flex items-center space-x-2">
+      <span className={`px-3 py-1 rounded-full text-sm ${badgeColors[status]}`}>
+        {status}
+      </span>
+    </div>
+  );
+};
+
+// Download Report Button
+
+const DownloadReportButton = ({ studentData, attendanceData,fetchAllMarks,selectedSemester }) => {
+  return (
+    <div className="flex space-x-4">
+
+      {/* Download PDF Button */}
+      <PDFDownloadLink
+        document={
+          <StudentReportPDF
+            studentData={studentData}
+            attendanceData={attendanceData}
+            allMarksData={fetchAllMarks}
+          />
+        }
+        fileName={`${studentData.studentId}_report.pdf`}
+      >
+        {({ loading }) =>
+          loading ? (
+            <button className="flex items-center space-x-2 bg-white/10 rounded-lg px-4 py-2 text-white hover:bg-white/20 transition-colors">
+              Loading PDF...
+            </button>
+          ) : (
+            <button className="flex items-center space-x-2 bg-white/10 rounded-lg px-4 py-2 text-white hover:bg-white/20 transition-colors">
+              <Download className="h-4 w-4" />
+              <span>Download PDF</span>
+            </button>
+          )
+        }
+      </PDFDownloadLink>
+    </div>
+  );
+};
+
+// StudentDetailsDashboard Component
 const StudentDetailsDashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -129,17 +171,81 @@ const StudentDetailsDashboard = () => {
     sgpa: undefined,
     cgpa: undefined,
   });
-  const generateShortForm = (subjectName) => {
-    if (subjectName.includes(" ")) {
-      return subjectName
-        .split(" ")
-        .map((word) => word[0])
-        .join("")
-        .toUpperCase();
-    }
-    return subjectName.substring(0, 4).toUpperCase();
-  };
+  const [allMarksData, setAllMarksData] = useState({});
 
+  useEffect(() => { 
+    fetchAllMarksForPDF(selectedSemester);
+  }, [selectedSemester]);
+  const fetchAllMarksForPDF = async (semester) => {
+    try {
+      setError(null);
+  
+      const yearCode = studentData.studentId.substring(0, 2);
+      const batch = "20" + yearCode;
+  
+      // Fetch marks for all exam types
+      const examTypes = ["mid1", "mid2", "external"];
+      const allMarks = {};
+  
+      for (const examType of examTypes) {
+        const queryParams = new URLSearchParams({
+          semester: semester,
+          batch: batch,
+          examType: examType,
+        });
+  
+        const response = await fetch(
+          `http://localhost:3000/api/v1/counsellor/student/${studentData.studentId}/marks?${queryParams}`
+        );
+  
+        if (!response.ok) {
+          throw new Error(`Failed to fetch ${examType} marks data`);
+        }
+  
+        const data = await response.json();
+  
+        if (!data.success) {
+          throw new Error(data.message || `Failed to fetch ${examType} marks data`);
+        }
+  
+        // Transform data based on exam type
+        if (examType === "external") {
+          const gradesData = data.data;
+          const transformedData = Object.entries(gradesData.marks).map(
+            ([subject, grade]) => ({
+              subject,
+              grade,
+            })
+          );
+  
+          // Extract SGPA and CGPA
+          const sgpa = transformedData.pop();
+          const cgpa = transformedData.pop();
+  
+          allMarks[examType] = {
+            marks: transformedData,
+            sgpa: sgpa.grade,
+            cgpa: cgpa.grade,
+          };
+        } else {
+          const transformedData = Object.entries(data.data.marks).map(
+            ([subject, marks]) => ({
+              subject,
+              marks: Number(marks),
+            })
+          );
+          allMarks[examType] = {
+            marks: transformedData,
+          };
+        }
+      }
+      setAllMarksData(allMarks); // Return all marks data for PDF generation
+    } catch (err) {
+      setError(err.message);
+      console.error("Error fetching marks data:", err);
+      return null;
+    } 
+  };
   // Fetch Attendance Data
   const fetchAttendanceData = async () => {
     try {
@@ -266,13 +372,14 @@ const StudentDetailsDashboard = () => {
     if (studentData?.studentId) {
       fetchAttendanceData();
     }
-  }, [studentData?.studentId, selectedAttendanceSemester]); // Only fetch attendance data when selectedAttendanceSemester changes
+  }, [studentData?.studentId, selectedAttendanceSemester]);
 
   useEffect(() => {
     if (studentData?.studentId) {
       fetchMarksData(activeTab, selectedSemester);
     }
-  }, [studentData?.studentId, activeTab, selectedSemester]); // Only fetch marks data when selectedSemester or activeTab changes
+  }, [studentData?.studentId, activeTab, selectedSemester]);
+
   // Event Handlers
   const handleTabChange = (newTab) => {
     setActiveTab(newTab);
@@ -326,8 +433,7 @@ const StudentDetailsDashboard = () => {
     );
   };
 
-  // Inside your StudentDetailsDashboard component, replace the renderAttendanceOverview with this:
-
+  // Attendance Overview Component
   const AttendanceOverview = ({
     attendanceData,
     selectedAttendanceSemester,
@@ -476,7 +582,7 @@ const StudentDetailsDashboard = () => {
                     Subject Distribution
                   </h3>
                   <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
                           data={pieChartData}
@@ -643,9 +749,7 @@ const StudentDetailsDashboard = () => {
               <div className="text-blue-100">
                 <p className="text-sm opacity-80 mb-1">Email</p>
                 <p className="font-semibold text-lg break-all">
-                  <a
-                    href={`mailto:${studentData.email}`}
-                  >
+                  <a href={`mailto:${studentData.email}`}>
                     {studentData.email}
                   </a>
                 </p>
@@ -704,7 +808,7 @@ const StudentDetailsDashboard = () => {
           </div>
         </div>
 
-        {/* Replace the renderAttendanceOverview call with this */}
+        {/* Attendance Overview */}
         <AttendanceOverview
           attendanceData={attendanceData}
           selectedAttendanceSemester={selectedAttendanceSemester}
@@ -728,7 +832,7 @@ const StudentDetailsDashboard = () => {
               <label className="text-white text-sm">Semester:</label>
               <select
                 value={selectedSemester}
-                onChange={(e) => handleSemesterChange(e.target.value)} // Only update selectedSemester
+                onChange={(e) => handleSemesterChange(e.target.value)}
                 className="bg-white/10 text-white border-2 border-yellow-400 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
               >
                 {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
@@ -781,13 +885,34 @@ const StudentDetailsDashboard = () => {
             ) : (
               <div className="h-80">
                 <SupremePerformanceBarChart
-                  marksData={marksData || []} // Ensure marksData is not null
+                  marksData={marksData || []}
                   loading={loading}
                   error={error}
                 />
               </div>
             )}
           </div>
+        </div>
+
+        {/* Download Report Section */}
+        <div className="bg-gradient-to-br from-indigo-900 via-purple-900 to-violet-900 rounded-xl p-6 shadow-lg">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-white/10 rounded-lg">
+                <Download className="h-6 w-6 text-white" />
+              </div>
+              <h2 className="text-xl font-semibold text-white">
+                Download Student Report
+              </h2>
+            </div>
+          </div>
+
+          <DownloadReportButton
+            studentData={studentData}
+            attendanceData={attendanceData}
+            fetchAllMarks={allMarksData}
+            selectedSemester={selectedSemester}
+          />
         </div>
       </main>
     </div>
