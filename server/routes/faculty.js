@@ -2,6 +2,8 @@ const { Student } = require("../models/student");
 const { Counsellor } = require("../models/counsellor");
 const { Attendance } = require("../models/attendance");
 const { Marks } = require("../models/marks");
+const  NoteMaking  = require("../models/notemaking");
+const mongoose = require("mongoose");
 
 const CounsellorRouter = require("express").Router();
 CounsellorRouter.post("/getattendance",async (req, res) => {
@@ -249,5 +251,100 @@ CounsellorRouter.get("/student/:studentId/marks", async (req, res) => {
     });
   }
 });
+CounsellorRouter.get('/notes/:counsellorId', async (req, res) => {
+  try {
+    const { counsellorId } = req.params;
+    
+    // Validate counsellorId format
+    if (!mongoose.Types.ObjectId.isValid(counsellorId)) {
+      return res.status(400).json({ success: false, message: 'Invalid counsellor ID format' });
+    }
+
+    const notes = await NoteMaking.find({ counsellorId })
+      .sort({ date: -1 }) // Sort by date descending (newest first)
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      data: notes
+    });
+  } catch (error) {
+    console.error('Error fetching counsellor notes:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch notes',
+      error: error.message
+    });
+  }
+});
+
+// 2. GET notes for a specific student
+CounsellorRouter.get('/notes/student/:studentId', async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    
+    // Validate studentId (assuming it's a string)
+    if (!studentId || typeof studentId !== 'string') {
+      return res.status(400).json({ success: false, message: 'Invalid student ID' });
+    }
+
+    const notes = await NoteMaking.find({ studentId })
+      .sort({ date: -1 }) // Sort by date descending (newest first)
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      data: notes
+    });
+  } catch (error) {
+    console.error('Error fetching student notes:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch notes for this student',
+      error: error.message
+    });
+  }
+});
+
+// 3. POST create a new note
+CounsellorRouter.post('/notes', async (req, res) => {
+  try {
+    const { studentId, counsellorId, note } = req.body;
+    
+    // Validate required fields
+    if (!studentId || !counsellorId || !note) {
+      return res.status(400).json({
+        success: false, 
+        message: 'Missing required fields: studentId, counsellorId, and note are required'
+      });
+    }
+    
+
+    // Create new note
+    const newNote = new NoteMaking({
+      studentId,
+      counsellorId,
+      note,
+      date: new Date() // Use current date and time
+    });
+
+    // Save note to database
+    const savedNote = await newNote.save();
+
+    return res.status(201).json({
+      success: true,
+      message: 'Note created successfully',
+      data: savedNote
+    });
+  } catch (error) {
+    console.error('Error creating note:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to create note',
+      error: error.message
+    });
+  }
+});
+
 
 module.exports = { CounsellorRouter };

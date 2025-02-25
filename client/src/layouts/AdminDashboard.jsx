@@ -17,7 +17,7 @@ import {
   Menu as MenuIcon,
   People as StudentsIcon,
   School as FacultyIcon,
-  AdminPanelSettings as AdminIcon,
+  Settings as AdminIcon,
   LibraryBooks as SubjectsIcon,
   EventNote as AttendanceIcon,
   Assignment as MarksIcon,
@@ -39,12 +39,13 @@ function AdminDashboard() {
   const navigate = useNavigate(); // For navigation after logout
 
   const menuItems = [
-    { text: "Dashboard", icon: <AdminIcon />, path: "/admin" },
     { text: "Students", icon: <StudentsIcon />, path: "/admin/students" },
     { text: "Faculty", icon: <FacultyIcon />, path: "/admin/faculty" },
     { text: "Subjects", icon: <SubjectsIcon />, path: "/admin/subjects" },
     { text: "Attendance", icon: <AttendanceIcon />, path: "/admin/attendance" },
     { text: "Marks", icon: <MarksIcon />, path: "/admin/marks" },
+    { text: "Features", icon: <AdminIcon />, path: "/admin/features" },
+
   ];
 
   const handleLogout = () => {

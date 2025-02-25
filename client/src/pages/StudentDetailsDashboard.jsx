@@ -67,9 +67,9 @@ const GradeCard = ({ subject, grade }) => {
 
   return (
     <div
-      className={`bg-gradient-to-r ${
-        gradeColors[grade] || "from-gray-600/20 to-gray-700/20"
-      } p-4 rounded-xl backdrop-blur-sm transform transition-all duration-300 hover:scale-105`}
+      className={`bg-white/10 p-4 rounded-xl backdrop-blur-sm transform transition-all duration-300 hover:scale-105
+        hover:bg-white/15 border-2 border-transparent hover:border-yellow-500 cursor-pointer group hover:-translate-y-1 hover:shadow-lg hover:shadow-yellow-500/1`}
+
     >
       <h3 className="text-lg font-semibold text-white mb-2">{subject}</h3>
       <div className="flex justify-between items-center">
@@ -373,7 +373,7 @@ const StudentDetailsDashboard = () => {
     };
 
     return (
-      <div className="bg-gradient-to-br from-slate-700 via-indigo-900 to-purple-900 rounded-xl shadow-2xl overflow-hidden">
+      <div className="bg-gradient-to-br from-indigo-900 via-purple-900 to-violet-900  rounded-xl shadow-2xl overflow-hidden">
         <div className="border-b border-white/10 p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -603,7 +603,10 @@ const StudentDetailsDashboard = () => {
                   <User className="h-6 w-6 text-white" />
                 </div>
                 <span className="text-white">{counsellorName}</span>
-                <button  onClick={() => navigate('/')} className="flex items-center space-x-2 bg-white/10 rounded-lg px-4 py-2 text-white hover:bg-white/20 transition-colors">
+                <button
+                  onClick={() => navigate("/")}
+                  className="flex items-center space-x-2 bg-white/10 rounded-lg px-4 py-2 text-white hover:bg-white/20 transition-colors"
+                >
                   <LogOut className="h-4 w-4" />
                   <span>Logout</span>
                 </button>
@@ -617,7 +620,7 @@ const StudentDetailsDashboard = () => {
       <main className="max-w-7xl mx-auto px-6 py-12 space-y-8 relative z-10 bg-slate-100">
         {/* Student Information Card */}
         <div className="w-full">
-        <div className="bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 rounded-xl p-8 shadow-2xl">
+          <div className="bg-gradient-to-br  from-indigo-900 via-purple-900 to-violet-900  rounded-xl p-8 shadow-2xl">
             <div className="flex items-center space-x-4 mb-8">
               <div className="p-3 bg-white/10 rounded-lg flex-shrink-0">
                 <User className="h-6 w-6 text-white" />
@@ -640,9 +643,14 @@ const StudentDetailsDashboard = () => {
               <div className="text-blue-100">
                 <p className="text-sm opacity-80 mb-1">Email</p>
                 <p className="font-semibold text-lg break-all">
-                  {studentData.email}
+                  <a
+                    href={`mailto:${studentData.email}`}
+                  >
+                    {studentData.email}
+                  </a>
                 </p>
               </div>
+
               <div className="text-blue-100">
                 <p className="text-sm opacity-80 mb-1">Phone Number</p>
                 <p className="font-semibold text-lg">
@@ -705,7 +713,7 @@ const StudentDetailsDashboard = () => {
         />
 
         {/* Academic Performance Section */}
-        <div className="bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 rounded-xl p-6 shadow-lg">
+        <div className="bg-gradient-to-br from-indigo-900 via-purple-900 to-violet-900 rounded-xl p-6 shadow-lg">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-4">
               <div className="p-3 bg-white/10 rounded-lg">
